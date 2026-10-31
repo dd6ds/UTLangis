@@ -1,0 +1,115 @@
+# Builds the arm64 click package and, for a version tag or on request,
+# publishes it as a GitHub release. See README, "Releases".
+name: Build click
+
+on:
+  # Start by hand: GitHub -> Actions -> "Build click" -> "Run workflow".
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Publish the result as a GitHub release"
+        type: boolean
+        default: false
+  # Pushing a tag such as v0.1.4 builds and publishes a release.
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write          # needed to create releases
+
+concurrency:
+  group: build-click-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    # The first build compiles libsignal and BoringSSL for arm64; with the
+    # cargo cache below later builds are much faster.
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(python3 -c 'import json; print(json.load(open("manifest.json"))["version"])')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # A release tag has to match the version inside the package.
+          if [[ "$GITHUB_REF" == refs/tags/* && "$GITHUB_REF_NAME" != "v$VERSION" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match manifest.json version $VERSION"
+            exit 1
+          fi
+
+      # The SDK image, clickable's derived image with the Rust toolchain and
+      # cargo's output need more space than the runner leaves free.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      # Cargo's downloads and compiled dependencies, kept between runs. They
+      # live in the build tree because CMakeLists.txt points cargo there.
+      - name: Cache cargo
+        uses: actions/cache@v5
+        with:
+          path: |
+            build/aarch64-linux-gnu/app/cargo-home/registry
+            build/aarch64-linux-gnu/app/cargo-home/git
+            build/aarch64-linux-gnu/app/cargo-target
+          key: cargo-arm64-${{ hashFiles('core/Cargo.lock') }}
+          restore-keys: cargo-arm64-
+
+      # Clickable builds in its Docker image (Ubuntu Touch SDK 20.04, arm64),
+      # the same way as "clickable build" locally, including the image_setup
+      # steps from clickable.yaml (Rust, CMake, protoc).
+      - name: Install clickable
+        run: |
+          pipx install clickable-ut
+          clickable --version
+
+      - name: Build click (arm64)
+        run: clickable build --arch arm64 --non-interactive
+
+      - name: Collect click
+        run: |
+          mkdir -p dist
+          cp build/aarch64-linux-gnu/app/*.click dist/
+          (cd dist && sha256sum *.click > SHA256SUMS)
+          ls -lh dist
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ubsignal-${{ steps.version.outputs.version }}-arm64
+          path: dist/
+          retention-days: 30
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/') || inputs.release
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG="$GITHUB_REF_NAME"
+            PRERELEASE=""
+          else
+            TAG="build-$(date -u +%Y%m%d-%H%M)"
+            PRERELEASE="--prerelease"
+          fi
+          cat > notes.md <<NOTES
+          ubSignal ${{ steps.version.outputs.version }} for Ubuntu Touch (arm64), built from commit ${GITHUB_SHA::7}.
+
+          **Install:** copy the .click file to the phone and open it with the
+          OpenStore app, or install it from a checkout with \`clickable install\`.
+
+          **Before registering:** your number moves to this phone - Signal on
+          another phone with the same number is signed out. Turn off a
+          registration lock (Signal PIN) in the old app first. See the README.
+          NOTES
+          gh release create "$TAG" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "ubSignal $TAG" \
+            --notes-file notes.md \
+            $PRERELEASE

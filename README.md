@@ -74,6 +74,28 @@ recompile what changed. Cargo's downloads and output live in `build/`.
 cd core && cargo build
 ```
 
+## Releases
+
+`.github/workflows/build.yml` builds the arm64 click package on GitHub Actions
+and attaches it, with a `SHA256SUMS` file, to a GitHub release:
+
+1. Raise `version` in `manifest.json` and commit.
+2. Tag that commit with the same version and push the tag:
+
+   ```bash
+   git tag v0.1.4
+   git push origin main v0.1.4
+   ```
+
+The workflow refuses a tag that does not match `manifest.json`. Without a tag,
+*Actions → Build click → Run workflow* builds the package as a downloadable
+workflow artifact; ticking *Publish the result as a GitHub release* turns it
+into a pre-release named `build-<date>`.
+
+The first run takes long (libsignal and BoringSSL are compiled for arm64).
+Cargo's downloads and compiled dependencies are cached between runs, keyed on
+`core/Cargo.lock`, so later runs only rebuild what changed.
+
 ## Layout
 
 ```
