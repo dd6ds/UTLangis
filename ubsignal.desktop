@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=ubSignal
+Comment=Signal messenger
+Exec=ubsignal
+Icon=ubsignal.png
+Terminal=false
+Type=Application
+Categories=Network;InstantMessaging;
+X-Lomiri-Touch=true

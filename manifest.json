@@ -1,0 +1,17 @@
+{
+  "name": "ubsignal",
+  "title": "ubSignal",
+  "version": "0.1.4",
+  "description": "Signal messenger for Ubuntu Touch, registered as the primary device of your number",
+  "maintainer": "Developer <developer@example.com>",
+  "architecture": "$ENV{CLICK_ARCH}",
+  "framework": "ubuntu-sdk-20.04",
+  "hooks": {
+    "ubsignal": {
+      "apparmor": "ubsignal.apparmor",
+      "desktop": "ubsignal.desktop"
+    }
+  },
+  "type": "app",
+  "icon": "ubsignal.png"
+}

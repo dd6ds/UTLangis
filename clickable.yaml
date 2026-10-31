@@ -1,0 +1,40 @@
+clickable_minimum_required: 8.7.0
+
+builder: cmake
+kill: ubsignal
+
+# Pinned so every container build is reproducible and clickable does not have
+# to probe the attached device for its architecture.
+restrict_arch: arm64
+framework: ubuntu-sdk-20.04
+
+# 'contacts' is a reserved AppArmor policy group: click-review flags it as
+# NEEDS REVIEW. That only matters for publishing to the OpenStore (manual
+# vetting); sideloaded packages work fine with it.
+ignore_review_errors: true
+
+# QtWebEngine shows Signal's registration captcha (CaptchaPage.qml).
+dependencies_target:
+  - qtdeclarative5-dev
+  - qtwebengine5-dev
+
+# The Signal backend (core/) is Rust. The SDK image has no Rust toolchain, so
+# clickable adds one to its derived image once: rustup for the arm64 target,
+# plus what the C parts of the dependencies need to build: clang for bindgen
+# (SQLCipher, BoringSSL), a CMake newer than focal's 3.16 (BoringSSL needs
+# 3.22) and a protobuf compiler newer than focal's 3.6 (libsignal).
+image_setup:
+  env:
+    RUSTUP_HOME: /opt/rust/rustup
+    CARGO_HOME: /opt/rust/cargo
+    PATH: /opt/rust/cargo/bin:/opt/cmake/bin:/opt/protoc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  run:
+    - apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip clang libclang-dev
+    - mkdir -p /opt/cmake && curl -sSfL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz | tar xz -C /opt/cmake --strip-components=1
+    - curl -sSfL -o /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip && unzip -q /tmp/protoc.zip -d /opt/protoc && rm /tmp/protoc.zip
+    # One step, so the permission change does not copy the toolchain into a
+    # second image layer. Builds run as the calling user, not root.
+    - curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable --no-modify-path && rustup target add aarch64-unknown-linux-gnu && chmod -R a+rwX /opt/rust /opt/protoc
+
+build_args:
+  - -DCMAKE_BUILD_TYPE=Release

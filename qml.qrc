@@ -1,0 +1,24 @@
+<RCC>
+  <qresource prefix="/">
+    <file>qml/main.qml</file>
+    <file>qml/StartingPage.qml</file>
+    <file>qml/RegisterPage.qml</file>
+    <file>qml/CaptchaPage.qml</file>
+    <file>qml/ChatsPage.qml</file>
+    <file>qml/ThreadRow.qml</file>
+    <file>qml/NewChatDialog.qml</file>
+    <file>qml/ContactsConsentDialog.qml</file>
+    <file>qml/ContactPickerPage.qml</file>
+    <file>qml/ProfileDialog.qml</file>
+    <file>qml/ChatPage.qml</file>
+    <file>qml/MessageBubble.qml</file>
+    <file>qml/AttachmentView.qml</file>
+    <file>qml/ImportPicker.qml</file>
+    <file>qml/SettingsPage.qml</file>
+    <file>qml/AppHeader.qml</file>
+    <file>qml/AppLabel.qml</file>
+    <file>qml/AppField.qml</file>
+    <file>qml/AppearanceChoice.qml</file>
+    <file>qml/Note.qml</file>
+  </qresource>
+</RCC>
