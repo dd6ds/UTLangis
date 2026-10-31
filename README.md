@@ -1,5 +1,7 @@
 # ubSignal
 
+<img src="ubsignal.png" alt="ubSignal app icon" width="96" align="right">
+
 A native Signal messenger for Ubuntu Touch. ubSignal registers the phone as
 the **primary device** of your phone number, like the Signal apps for Android
 and iOS do — no other phone and no pairing (QR-code linking) is needed.
