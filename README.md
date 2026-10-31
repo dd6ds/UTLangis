@@ -8,6 +8,12 @@ The Signal protocol work is done by [presage](https://github.com/whisperfish/pre
 (Rust, on top of Signal's own `libsignal`). The user interface is Qt 5.12 /
 QML, like the other ubTouch apps.
 
+| Chats | New chat | Settings |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/chats.png" alt="ubSignal conversation list" width="250"> | <img src="docs/screenshots/new-chat.png" alt="ubSignal new chat dialog with contact picker and number field" width="250"> | <img src="docs/screenshots/settings.png" alt="ubSignal settings with contacts permission and appearance" width="250"> |
+
+Names and numbers in the screenshots are placeholders.
+
 ## Features
 
 - Registration as primary device with captcha and SMS or voice-call code
