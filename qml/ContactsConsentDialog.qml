@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-// Asks once before ubSignal reads the address book. The answer is kept in
+// Asks once before UT Langis reads the address book. The answer is kept in
 // app.settings.contactsAccess ("allowed" / "denied") and can be changed in
 // Settings. The address book is not touched before the user allows it.
 Dialog {
@@ -44,7 +44,7 @@ Dialog {
         AppLabel {
             Layout.fillWidth: true
             wrapMode: Text.Wrap
-            text: qsTr("ubSignal would like to read your address book so you can pick "
+            text: qsTr("UT Langis would like to read your address book so you can pick "
                        + "the person to write to.")
         }
 

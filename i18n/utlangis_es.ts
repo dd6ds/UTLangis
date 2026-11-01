@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<TS version="2.1" language="fr_FR">
+<TS version="2.1" language="es_ES">
 <context>
     <name>AppHeader</name>
     <message>
         <location filename="../qml/AppHeader.qml" line="+29" />
         <source>Back</source>
-        <translation>Retour</translation>
+        <translation>Atrás</translation>
     </message>
 </context>
 <context>
@@ -13,22 +13,22 @@
     <message>
         <location filename="../qml/AppearanceChoice.qml" line="+14" />
         <source>Appearance</source>
-        <translation>Apparence</translation>
+        <translation>Apariencia</translation>
     </message>
     <message>
         <location line="+10" />
         <source>Like the phone</source>
-        <translation>Comme le téléphone</translation>
+        <translation>Como el teléfono</translation>
     </message>
     <message>
         <location line="+1" />
         <source>Light</source>
-        <translation>Clair</translation>
+        <translation>Claro</translation>
     </message>
     <message>
         <location line="+1" />
         <source>Dark</source>
-        <translation>Sombre</translation>
+        <translation>Oscuro</translation>
     </message>
 </context>
 <context>
@@ -36,12 +36,12 @@
     <message>
         <location filename="../qml/AttachmentView.qml" line="+54" />
         <source>Stop</source>
-        <translation>Arrêter</translation>
+        <translation>Detener</translation>
     </message>
     <message>
         <location line="+0" />
         <source>Play voice message</source>
-        <translation>Écouter le message vocal</translation>
+        <translation>Reproducir mensaje de voz</translation>
     </message>
 </context>
 <context>
@@ -54,12 +54,12 @@
     <message>
         <location line="+55" />
         <source>or paste the signalcaptcha:// link</source>
-        <translation>ou collez le lien signalcaptcha://</translation>
+        <translation>o pega el enlace signalcaptcha://</translation>
     </message>
     <message>
         <location line="+6" />
         <source>OK</source>
-        <translation>OK</translation>
+        <translation>Aceptar</translation>
     </message>
 </context>
 <context>
@@ -67,57 +67,57 @@
     <message>
         <location filename="../qml/ChatPage.qml" line="+39" />
         <source>Unknown contact</source>
-        <translation>Contact inconnu</translation>
+        <translation>Contacto desconocido</translation>
     </message>
     <message>
         <location line="+8" />
         <source>Rename</source>
-        <translation>Renommer</translation>
+        <translation>Cambiar nombre</translation>
     </message>
     <message>
         <location line="+6" />
         <source>Unmute</source>
-        <translation>Réactiver le son</translation>
+        <translation>Activar sonido</translation>
     </message>
     <message>
         <location line="+0" />
         <source>Mute</source>
-        <translation>Mettre en sourdine</translation>
+        <translation>Silenciar</translation>
     </message>
     <message>
         <location line="+3" />
         <source>Chat muted</source>
-        <translation>Conversation en sourdine</translation>
+        <translation>Chat silenciado</translation>
     </message>
     <message>
         <location line="+0" />
         <source>Chat unmuted</source>
-        <translation>Son réactivé</translation>
+        <translation>Chat con sonido</translation>
     </message>
     <message>
         <location line="+85" />
         <source>You</source>
-        <translation>Vous</translation>
+        <translation>Tú</translation>
     </message>
     <message>
         <location line="+7" />
         <source>Cancel reply</source>
-        <translation>Annuler la réponse</translation>
+        <translation>Cancelar respuesta</translation>
     </message>
     <message>
         <location line="+24" />
         <source>Remove photo</source>
-        <translation>Retirer la photo</translation>
+        <translation>Quitar foto</translation>
     </message>
     <message>
         <location line="+14" />
         <source>Attach photo</source>
-        <translation>Joindre une photo</translation>
+        <translation>Adjuntar foto</translation>
     </message>
     <message>
         <location line="+6" />
         <source>Keyboard</source>
-        <translation>Clavier</translation>
+        <translation>Teclado</translation>
     </message>
     <message>
         <location line="+0" />
@@ -127,33 +127,33 @@
     <message>
         <location line="+16" />
         <source>Record voice message</source>
-        <translation>Enregistrer un message vocal</translation>
+        <translation>Grabar mensaje de voz</translation>
     </message>
     <message>
         <location line="+6" />
         <source>Message</source>
-        <translation>Message</translation>
+        <translation>Mensaje</translation>
     </message>
     <message>
         <location line="+6" />
         <location line="+29" />
         <source>Send</source>
-        <translation>Envoyer</translation>
+        <translation>Enviar</translation>
     </message>
     <message>
         <location line="-14" />
         <source>Discard recording</source>
-        <translation>Supprimer l'enregistrement</translation>
+        <translation>Descartar grabación</translation>
     </message>
     <message>
         <location line="+11" />
         <source>Recording %1</source>
-        <translation>Enregistrement %1</translation>
+        <translation>Grabando %1</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Recording too short</source>
-        <translation>Enregistrement trop court</translation>
+        <translation>Grabación demasiado corta</translation>
     </message>
 </context>
 <context>
@@ -161,27 +161,27 @@
     <message>
         <location filename="../qml/ChatsPage.qml" line="+24" />
         <source>Connected</source>
-        <translation>Connecté</translation>
+        <translation>Conectado</translation>
     </message>
     <message>
         <location line="+0" />
         <source>Not connected</source>
-        <translation>Non connecté</translation>
+        <translation>Sin conexión</translation>
     </message>
     <message>
         <location line="+5" />
         <source>New chat</source>
-        <translation>Nouvelle conversation</translation>
+        <translation>Nuevo chat</translation>
     </message>
     <message>
         <location line="+6" />
         <source>Settings</source>
-        <translation>Paramètres</translation>
+        <translation>Ajustes</translation>
     </message>
     <message>
         <location line="+24" />
         <source>No chats yet. Tap + to write to a phone number.</source>
-        <translation>Aucune conversation. Touchez + pour écrire à un numéro de téléphone.</translation>
+        <translation>Aún no hay chats. Toca + para escribir a un número de teléfono.</translation>
     </message>
 </context>
 <context>
@@ -189,17 +189,17 @@
     <message>
         <location filename="../qml/ContactPickerPage.qml" line="+18" />
         <source>Contacts</source>
-        <translation>Contacts</translation>
+        <translation>Contactos</translation>
     </message>
     <message>
         <location line="+48" />
         <source>Search</source>
-        <translation>Rechercher</translation>
+        <translation>Buscar</translation>
     </message>
     <message>
         <location line="+54" />
         <source>No contacts found.</source>
-        <translation>Aucun contact trouvé.</translation>
+        <translation>No se encontraron contactos.</translation>
     </message>
 </context>
 <context>
@@ -207,27 +207,27 @@
     <message>
         <location filename="../qml/ContactsConsentDialog.qml" line="+19" />
         <source>Access contacts?</source>
-        <translation>Accéder aux contacts ?</translation>
+        <translation>¿Acceder a los contactos?</translation>
     </message>
     <message>
         <location line="+4" />
         <source>Don't allow</source>
-        <translation>Ne pas autoriser</translation>
+        <translation>No permitir</translation>
     </message>
     <message>
         <location line="+4" />
         <source>Allow</source>
-        <translation>Autoriser</translation>
+        <translation>Permitir</translation>
     </message>
     <message>
         <location line="+20" />
-        <source>ubSignal would like to read your address book so you can pick the person to write to.</source>
-        <translation>ubSignal souhaite lire votre carnet d'adresses pour que vous puissiez choisir la personne à qui écrire.</translation>
+        <source>UT Langis would like to read your address book so you can pick the person to write to.</source>
+        <translation>UT Langis quiere leer tu agenda para que puedas elegir a quién escribir.</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Your contacts stay on this phone. Only the number you choose is looked up at Signal. You can change this later in Settings.</source>
-        <translation>Vos contacts restent sur ce téléphone. Seul le numéro choisi est recherché auprès de Signal. Vous pourrez modifier cela plus tard dans les paramètres.</translation>
+        <translation>Tus contactos se quedan en este teléfono. Solo se consulta en Signal el número que elijas. Puedes cambiarlo más tarde en Ajustes.</translation>
     </message>
 </context>
 <context>
@@ -235,7 +235,7 @@
     <message>
         <location filename="../qml/ImageViewerPage.qml" line="+88" />
         <source>Close</source>
-        <translation>Fermer</translation>
+        <translation>Cerrar</translation>
     </message>
 </context>
 <context>
@@ -243,7 +243,7 @@
     <message>
         <location filename="../qml/ImportPicker.qml" line="+33" />
         <source>Send a photo from</source>
-        <translation>Envoyer une photo depuis</translation>
+        <translation>Enviar una foto desde</translation>
     </message>
 </context>
 <context>
@@ -251,12 +251,12 @@
     <message>
         <location filename="../qml/LanguageChoice.qml" line="+14" />
         <source>Language</source>
-        <translation>Langue</translation>
+        <translation>Idioma</translation>
     </message>
     <message>
         <location line="+6" />
         <source>Like the phone</source>
-        <translation>Comme le téléphone</translation>
+        <translation>Como el teléfono</translation>
     </message>
 </context>
 <context>
@@ -264,27 +264,27 @@
     <message>
         <location filename="../qml/MessageActionsDialog.qml" line="+61" />
         <source>React with %1</source>
-        <translation>Réagir avec %1</translation>
+        <translation>Reaccionar con %1</translation>
     </message>
     <message>
         <location line="+8" />
         <source>Reply</source>
-        <translation>Répondre</translation>
+        <translation>Responder</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Delete for me</source>
-        <translation>Supprimer pour moi</translation>
+        <translation>Eliminar para mí</translation>
     </message>
     <message>
         <location line="+10" />
         <source>Delete for everyone</source>
-        <translation>Supprimer pour tout le monde</translation>
+        <translation>Eliminar para todos</translation>
     </message>
     <message>
         <location line="+10" />
         <source>Cancel</source>
-        <translation>Annuler</translation>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -292,22 +292,22 @@
     <message>
         <location filename="../qml/MessageBubble.qml" line="+101" />
         <source>You</source>
-        <translation>Vous</translation>
+        <translation>Tú</translation>
     </message>
     <message>
         <location line="+45" />
         <source>Read</source>
-        <translation>Lu</translation>
+        <translation>Leído</translation>
     </message>
     <message>
         <location line="+1" />
         <source>Delivered</source>
-        <translation>Distribué</translation>
+        <translation>Entregado</translation>
     </message>
     <message>
         <location line="+0" />
         <source>Sent</source>
-        <translation>Envoyé</translation>
+        <translation>Enviado</translation>
     </message>
 </context>
 <context>
@@ -315,27 +315,27 @@
     <message>
         <location filename="../qml/NewChatDialog.qml" line="+16" />
         <source>New chat</source>
-        <translation>Nouvelle conversation</translation>
+        <translation>Nuevo chat</translation>
     </message>
     <message>
         <location line="+16" />
         <source>Choose from contacts</source>
-        <translation>Choisir dans les contacts</translation>
+        <translation>Elegir de los contactos</translation>
     </message>
     <message>
         <location line="+10" />
         <source>or enter a phone number</source>
-        <translation>ou saisir un numéro de téléphone</translation>
+        <translation>o introduce un número de teléfono</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Looking up...</source>
-        <translation>Recherche...</translation>
+        <translation>Buscando...</translation>
     </message>
     <message>
         <location line="+0" />
         <source>Start chat</source>
-        <translation>Démarrer la conversation</translation>
+        <translation>Iniciar chat</translation>
     </message>
 </context>
 <context>
@@ -343,12 +343,12 @@
     <message>
         <location filename="../src/notifier.cpp" line="+154" />
         <source>Attachment</source>
-        <translation>Pièce jointe</translation>
+        <translation>Adjunto</translation>
     </message>
     <message>
         <location line="+5" />
         <source>New message</source>
-        <translation>Nouveau message</translation>
+        <translation>Nuevo mensaje</translation>
     </message>
 </context>
 <context>
@@ -356,17 +356,17 @@
     <message>
         <location filename="../qml/ProfileDialog.qml" line="+16" />
         <source>Your name</source>
-        <translation>Votre nom</translation>
+        <translation>Tu nombre</translation>
     </message>
     <message>
         <location line="+18" />
         <source>This name is shown to the people you write to.</source>
-        <translation>Ce nom est affiché aux personnes à qui vous écrivez.</translation>
+        <translation>Este nombre lo ven las personas a las que escribes.</translation>
     </message>
     <message>
         <location line="+6" />
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation>Nombre</translation>
     </message>
 </context>
 <context>
@@ -374,87 +374,87 @@
     <message>
         <location filename="../qml/RegisterPage.qml" line="+29" />
         <source>Set up Signal</source>
-        <translation>Configurer Signal</translation>
+        <translation>Configurar Signal</translation>
     </message>
     <message>
         <location line="+55" />
         <source>Phone number</source>
-        <translation>Numéro de téléphone</translation>
+        <translation>Número de teléfono</translation>
     </message>
     <message>
         <location line="+8" />
         <source>Link device</source>
-        <translation>Associer un appareil</translation>
+        <translation>Vincular dispositivo</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Use the Signal account of your other phone on this one as well, like Signal Desktop. Both stay signed in.</source>
-        <translation>Utilisez aussi sur ce téléphone le compte Signal de votre autre téléphone, comme Signal Desktop. Les deux restent connectés.</translation>
+        <translation>Usa también en este teléfono la cuenta de Signal de tu otro teléfono, como Signal Desktop. Ambos siguen conectados.</translation>
     </message>
     <message>
         <location line="+7" />
         <source>Show QR code</source>
-        <translation>Afficher le code QR</translation>
+        <translation>Mostrar código QR</translation>
     </message>
     <message>
         <location line="+11" />
         <source>On your other phone, open Signal → Settings → Linked devices, tap + and scan this code.</source>
-        <translation>Sur votre autre téléphone, ouvrez Signal → Paramètres → Appareils associés, touchez + et scannez ce code.</translation>
+        <translation>En tu otro teléfono, abre Signal → Ajustes → Dispositivos vinculados, toca + y escanea este código.</translation>
     </message>
     <message>
         <location line="+30" />
         <source>Cancel</source>
-        <translation>Annuler</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location line="+8" />
-        <source>ubSignal becomes the Signal app for your number on this phone. Signal on another phone with the same number will be signed out.</source>
-        <translation>ubSignal devient l'application Signal de votre numéro sur ce téléphone. Signal sera déconnecté sur tout autre téléphone utilisant le même numéro.</translation>
+        <source>UT Langis becomes the Signal app for your number on this phone. Signal on another phone with the same number will be signed out.</source>
+        <translation>UT Langis se convierte en la app de Signal de tu número en este teléfono. Signal se cerrará en cualquier otro teléfono con el mismo número.</translation>
     </message>
     <message>
         <location line="+10" />
         <source>If you set a Signal PIN with registration lock, turn the lock off in your old Signal app first.</source>
-        <translation>Si vous avez défini un code PIN Signal avec verrou d'inscription, désactivez d'abord le verrou dans votre ancienne application Signal.</translation>
+        <translation>Si tienes un PIN de Signal con bloqueo de registro, desactiva primero el bloqueo en tu antigua app de Signal.</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Phone number, e.g. +491701234567</source>
-        <translation>Numéro de téléphone, p. ex. +33612345678</translation>
+        <translation>Número de teléfono, p. ej. +34612345678</translation>
     </message>
     <message>
         <location line="+8" />
         <source>Call me instead of sending an SMS</source>
-        <translation>M'appeler au lieu d'envoyer un SMS</translation>
+        <translation>Llamarme en lugar de enviar un SMS</translation>
     </message>
     <message>
         <location line="+14" />
         <source>Continue</source>
-        <translation>Continuer</translation>
+        <translation>Continuar</translation>
     </message>
     <message>
         <location line="+8" />
         <source>Enter the code Signal sent to %1.</source>
-        <translation>Saisissez le code que Signal a envoyé au %1.</translation>
+        <translation>Introduce el código que Signal envió al %1.</translation>
     </message>
     <message>
         <location line="+7" />
         <source>Verification code</source>
-        <translation>Code de vérification</translation>
+        <translation>Código de verificación</translation>
     </message>
     <message>
         <location line="+10" />
         <source>Confirm</source>
-        <translation>Confirmer</translation>
+        <translation>Confirmar</translation>
     </message>
     <message>
         <location line="+12" />
         <source>Request a new code</source>
-        <translation>Demander un nouveau code</translation>
+        <translation>Solicitar un código nuevo</translation>
     </message>
     <message>
         <location line="+0" />
         <source>Enter the code</source>
-        <translation>Saisir le code</translation>
+        <translation>Introducir el código</translation>
     </message>
 </context>
 <context>
@@ -462,17 +462,17 @@
     <message>
         <location filename="../qml/RenameDialog.qml" line="+16" />
         <source>Rename</source>
-        <translation>Renommer</translation>
+        <translation>Cambiar nombre</translation>
     </message>
     <message>
         <location line="+22" />
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation>Nombre</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Leave empty to use the name from the person's Signal profile.</source>
-        <translation>Laissez vide pour utiliser le nom du profil Signal de la personne.</translation>
+        <translation>Déjalo vacío para usar el nombre del perfil de Signal de la persona.</translation>
     </message>
 </context>
 <context>
@@ -480,57 +480,57 @@
     <message>
         <location filename="../qml/SettingsPage.qml" line="+15" />
         <source>Settings</source>
-        <translation>Paramètres</translation>
+        <translation>Ajustes</translation>
     </message>
     <message>
         <location line="+21" />
         <source>Registered number: %1</source>
-        <translation>Numéro enregistré : %1</translation>
+        <translation>Número registrado: %1</translation>
     </message>
     <message>
         <location line="+9" />
         <source>This phone is a linked device. The profile is managed on the phone the account was registered with.</source>
-        <translation>Ce téléphone est un appareil associé. Le profil est géré sur le téléphone avec lequel le compte a été enregistré.</translation>
+        <translation>Este teléfono es un dispositivo vinculado. El perfil se gestiona en el teléfono con el que se registró la cuenta.</translation>
     </message>
     <message>
         <location line="+7" />
         <source>Change profile name</source>
-        <translation>Modifier le nom de profil</translation>
+        <translation>Cambiar nombre de perfil</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Allow access to contacts</source>
-        <translation>Autoriser l'accès aux contacts</translation>
+        <translation>Permitir el acceso a los contactos</translation>
     </message>
     <message>
         <location line="+14" />
         <source>Notifications</source>
-        <translation>Notifications</translation>
+        <translation>Notificaciones</translation>
     </message>
     <message>
         <location line="+12" />
         <source>Notification sound</source>
-        <translation>Son de notification</translation>
+        <translation>Sonido de notificación</translation>
     </message>
     <message>
         <location line="+13" />
         <source>Phone default</source>
-        <translation>Son par défaut du téléphone</translation>
+        <translation>Predeterminado del teléfono</translation>
     </message>
     <message>
         <location line="+1" />
         <source>No sound</source>
-        <translation>Aucun son</translation>
+        <translation>Sin sonido</translation>
     </message>
     <message>
         <location line="+17" />
         <source>Send read receipts</source>
-        <translation>Envoyer les confirmations de lecture</translation>
+        <translation>Enviar confirmaciones de lectura</translation>
     </message>
     <message>
         <location line="+26" />
-        <source>Ubuntu Touch pauses apps in the background, so new messages arrive when ubSignal is open. To be notified while it is in the background, prevent app suspension for ubSignal (e.g. with UT Tweak Tool).</source>
-        <translation>Ubuntu Touch met les applications en pause en arrière-plan : les nouveaux messages arrivent quand ubSignal est ouvert. Pour être notifié en arrière-plan, empêchez la mise en pause d'ubSignal (p. ex. avec UT Tweak Tool).</translation>
+        <source>Ubuntu Touch pauses apps in the background, so new messages arrive when UT Langis is open. To be notified while it is in the background, prevent app suspension for UT Langis (e.g. with UT Tweak Tool).</source>
+        <translation>Ubuntu Touch pausa las apps en segundo plano, así que los mensajes nuevos llegan cuando UT Langis está abierta. Para recibir avisos en segundo plano, impide que UT Langis se pause (p. ej. con UT Tweak Tool).</translation>
     </message>
 </context>
 <context>
@@ -538,7 +538,7 @@
     <message>
         <location filename="../qml/StartingPage.qml" line="+26" />
         <source>Starting...</source>
-        <translation>Démarrage...</translation>
+        <translation>Iniciando...</translation>
     </message>
 </context>
 <context>
@@ -546,7 +546,7 @@
     <message>
         <location filename="../qml/ThreadRow.qml" line="+31" />
         <source>Unknown contact</source>
-        <translation>Contact inconnu</translation>
+        <translation>Contacto desconocido</translation>
     </message>
 </context>
 <context>
@@ -554,42 +554,42 @@
     <message>
         <location filename="../qml/main.qml" line="+131" />
         <source>Access to contacts is off. You can allow it in Settings.</source>
-        <translation>L'accès aux contacts est désactivé. Vous pouvez l'autoriser dans les paramètres.</translation>
+        <translation>El acceso a los contactos está desactivado. Puedes permitirlo en Ajustes.</translation>
     </message>
     <message>
         <location line="+20" />
         <source>Signal asks for a captcha. Please solve it again.</source>
-        <translation>Signal demande un captcha. Veuillez le résoudre à nouveau.</translation>
+        <translation>Signal pide un captcha. Resuélvelo de nuevo.</translation>
     </message>
     <message>
         <location line="+2" />
         <source>Signal does not send a code right now. Try again later or ask for a call.</source>
-        <translation>Signal n'envoie pas de code pour le moment. Réessayez plus tard ou demandez un appel.</translation>
+        <translation>Signal no envía ningún código ahora mismo. Inténtalo más tarde o pide una llamada.</translation>
     </message>
     <message>
         <location line="+2" />
         <source>The code was not accepted. Please request a new one.</source>
-        <translation>Le code n'a pas été accepté. Veuillez en demander un nouveau.</translation>
+        <translation>El código no fue aceptado. Solicita uno nuevo.</translation>
     </message>
     <message>
         <location line="+2" />
         <source>Please enter the number in international format, e.g. +491701234567.</source>
-        <translation>Veuillez saisir le numéro au format international, p. ex. +33612345678.</translation>
+        <translation>Introduce el número en formato internacional, p. ej. +34612345678.</translation>
     </message>
     <message>
         <location line="+2" />
         <source>This number does not use Signal.</source>
-        <translation>Ce numéro n'utilise pas Signal.</translation>
+        <translation>Este número no usa Signal.</translation>
     </message>
     <message>
         <location line="+12" />
         <source>Profile name saved</source>
-        <translation>Nom de profil enregistré</translation>
+        <translation>Nombre de perfil guardado</translation>
     </message>
     <message>
         <location line="+9" />
         <source>Audio could not be recorded or played: %1</source>
-        <translation>Impossible d'enregistrer ou de lire l'audio : %1</translation>
+        <translation>No se pudo grabar o reproducir el audio: %1</translation>
     </message>
 </context>
 </TS>

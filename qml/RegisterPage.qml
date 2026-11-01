@@ -154,7 +154,7 @@ Page {
                 Layout.fillWidth: true
                 visible: page.numberStep
                 wrapMode: Text.Wrap
-                text: qsTr("ubSignal becomes the Signal app for your number on this phone. "
+                text: qsTr("UT Langis becomes the Signal app for your number on this phone. "
                            + "Signal on another phone with the same number will be signed out.")
             }
 

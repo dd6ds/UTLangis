@@ -83,7 +83,7 @@ jobs:
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ubsignal-${{ steps.version.outputs.version }}-arm64
+          name: utlangis-${{ steps.version.outputs.version }}-arm64
           path: dist/
           retention-days: 30
 
@@ -98,7 +98,7 @@ jobs:
             PRERELEASE="--prerelease"
           fi
           cat > notes.md <<NOTES
-          ubSignal ${{ steps.version.outputs.version }} for Ubuntu Touch (arm64), built from commit ${GITHUB_SHA::7}.
+          UT Langis ${{ steps.version.outputs.version }} for Ubuntu Touch (arm64), built from commit ${GITHUB_SHA::7}.
 
           **Install:** copy the .click file to the phone and open it with the
           OpenStore app, or install it from a checkout with \`clickable install\`.
@@ -110,6 +110,6 @@ jobs:
           gh release create "$TAG" dist/* \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "ubSignal $TAG" \
+            --title "UT Langis $TAG" \
             --notes-file notes.md \
             $PRERELEASE

@@ -1,4 +1,4 @@
-//! C interface of the ubSignal backend (see include/ubsignal_core.h).
+//! C interface of the UT Langis backend (see include/utlangis_core.h).
 //!
 //! Commands (JSON objects with a "cmd" field):
 //! - `register` {phone, captcha, voice}: request a verification code
@@ -54,9 +54,9 @@ static BACKEND: Mutex<Option<Backend>> = Mutex::new(None);
 
 /// # Safety
 /// `data_dir` must be a valid NUL-terminated string. `callback` must stay
-/// callable with `context` until `ubsignal_stop` has returned.
+/// callable with `context` until `utlangis_stop` has returned.
 #[no_mangle]
-pub unsafe extern "C" fn ubsignal_start(
+pub unsafe extern "C" fn utlangis_start(
     data_dir: *const c_char,
     callback: EventCallback,
     context: *mut c_void,
@@ -75,7 +75,7 @@ pub unsafe extern "C" fn ubsignal_start(
     let sink = EventSink::new(callback, context);
     let (commands, receiver) = unbounded_channel();
     let thread = std::thread::Builder::new()
-        .name("ubsignal-core".into())
+        .name("utlangis-core".into())
         .spawn(move || worker::run(data_dir, sink, receiver));
     match thread {
         Ok(thread) => {
@@ -89,7 +89,7 @@ pub unsafe extern "C" fn ubsignal_start(
 /// # Safety
 /// `json` must be a valid NUL-terminated string.
 #[no_mangle]
-pub unsafe extern "C" fn ubsignal_command(json: *const c_char) {
+pub unsafe extern "C" fn utlangis_command(json: *const c_char) {
     if json.is_null() {
         return;
     }
@@ -100,7 +100,7 @@ pub unsafe extern "C" fn ubsignal_command(json: *const c_char) {
 }
 
 #[no_mangle]
-pub extern "C" fn ubsignal_stop() {
+pub extern "C" fn utlangis_stop() {
     let backend = BACKEND.lock().unwrap_or_else(|e| e.into_inner()).take();
     if let Some(Backend { commands, thread }) = backend {
         // Closing the channel ends the worker's command loop.

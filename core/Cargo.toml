@@ -1,14 +1,14 @@
-# Signal backend of ubSignal: a static library with a small C interface
-# (include/ubsignal_core.h) that the Qt app links against.
+# Signal backend of UT Langis: a static library with a small C interface
+# (include/utlangis_core.h) that the Qt app links against.
 [package]
-name = "ubsignal-core"
+name = "utlangis-core"
 version = "0.1.0"
 edition = "2021"
 license = "AGPL-3.0-only"
 publish = false
 
 [lib]
-name = "ubsignal_core"
+name = "utlangis_core"
 crate-type = ["staticlib"]
 
 [dependencies]

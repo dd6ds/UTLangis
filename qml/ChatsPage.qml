@@ -12,7 +12,7 @@ Page {
 
     header: AppHeader {
         app: page.app
-        title: "ubSignal"
+        title: "UT Langis"
         showBack: false
 
         Rectangle {

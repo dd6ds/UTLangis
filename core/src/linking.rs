@@ -1,4 +1,4 @@
-//! Linking ubSignal as an additional device of an existing Signal account
+//! Linking UT Langis as an additional device of an existing Signal account
 //! (like Signal Desktop): Signal hands out a provisioning address, the app
 //! shows it as a QR code ("linkQr" event), and the user scans it with the
 //! Signal app on their phone under Settings -> Linked devices.

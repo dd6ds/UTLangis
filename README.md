@@ -1,8 +1,8 @@
-# ubSignal
+# UT Langis
 
-<img src="ubsignal.png" alt="ubSignal app icon" width="96" align="right">
+<img src="utlangis.png" alt="UT Langis app icon" width="96" align="right">
 
-A native Signal messenger for Ubuntu Touch. ubSignal can register the phone
+A native Signal messenger for Ubuntu Touch. UT Langis can register the phone
 as the **primary device** of your phone number, like the Signal apps for
 Android and iOS do — no other phone and no pairing needed. Alternatively it
 can be **linked** to the account of another phone by QR code, like Signal
@@ -14,7 +14,7 @@ QML, like the other ubTouch apps.
 
 | Chats | New chat | Settings |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/chats.png" alt="ubSignal conversation list" width="250"> | <img src="docs/screenshots/new-chat.png" alt="ubSignal new chat dialog with contact picker and number field" width="250"> | <img src="docs/screenshots/settings.png" alt="ubSignal settings with contacts permission and appearance" width="250"> |
+| <img src="docs/screenshots/chats.png" alt="UT Langis conversation list" width="250"> | <img src="docs/screenshots/new-chat.png" alt="UT Langis new chat dialog with contact picker and number field" width="250"> | <img src="docs/screenshots/settings.png" alt="UT Langis settings with contacts permission and appearance" width="250"> |
 
 Names and numbers in the screenshots are placeholders.
 
@@ -29,7 +29,7 @@ Names and numbers in the screenshots are placeholders.
 - Emoji panel in the chat (😊), with recently used emoji
 - Voice messages: record (🎤) and play, AAC like Signal's own apps
 - Delivery state of own messages: ✓ sent, ✓✓ delivered, green ✓✓ read;
-  ubSignal confirms delivery and (optionally, Settings) reading in return
+  UT Langis confirms delivery and (optionally, Settings) reading in return
 - Rename a one-to-one chat (✎), e.g. for someone not in the address book;
   address book names and own names are kept over Signal profile names
 - Reactions (press and hold): 👍 👎 ❤️ 😂 😮 😢, shown under the message,
@@ -49,7 +49,7 @@ Names and numbers in the screenshots are placeholders.
   or a language chosen in the settings
 
 Not (yet) included: calls, stories, registration lock PIN, linking further
-devices (Signal Desktop) to ubSignal when it is the primary device.
+devices (Signal Desktop) to UT Langis when it is the primary device.
 
 ## Important before registering
 
@@ -58,33 +58,48 @@ devices (Signal Desktop) to ubSignal when it is the primary device.
   transferred.
 - **Registration lock:** if your Signal account has a PIN with registration
   lock, turn the lock off in the old app first (Settings → Account →
-  Registration lock). ubSignal cannot answer the PIN challenge.
+  Registration lock). UT Langis cannot answer the PIN challenge.
 - Signal tolerates third-party clients but does not support them; server
-  changes can break ubSignal until presage is updated.
+  changes can break UT Langis until presage is updated.
 
 ## Linking instead
 
 | Choose "Link device" | Scan with the other phone |
 | :---: | :---: |
-| <img src="docs/screenshots/setup-choice.png" alt="ubSignal set-up page with the choice between phone number and linking" width="250"> | <img src="docs/screenshots/setup-link.png" alt="ubSignal showing the QR code for linking" width="250"> |
+| <img src="docs/screenshots/setup-choice.png" alt="UT Langis set-up page with the choice between phone number and linking" width="250"> | <img src="docs/screenshots/setup-link.png" alt="UT Langis showing the QR code for linking" width="250"> |
 
 The QR code in the screenshot is a placeholder (it points to this project).
 
 Choose *Link device* on the set-up page and tap *Show QR code*. On the
 other phone open Signal → Settings → Linked devices → + and scan the code.
-The other phone stays the primary device; ubSignal receives contacts and new
+The other phone stays the primary device; UT Langis receives contacts and new
 messages (not the old history) and manages no profile of its own.
 
 ## Registering
 
 1. Enter your number in international format (`+49…`) and tap *Continue*.
 2. Solve the captcha. When it is solved, the page tries to open a
-   `signalcaptcha://` link, which ubSignal catches. If the captcha does not
+   `signalcaptcha://` link, which UT Langis catches. If the captcha does not
    work in the app, solve it in a browser at
    <https://signalcaptchas.org/registration/generate.html>, copy the
    *Open Signal* link and paste it into the field below the captcha.
 3. Enter the 6-digit code from the SMS or call.
 4. Set the name people see.
+
+## Coming from ubSignal
+
+UT Langis was called ubSignal before (package `ubsignal`); the name changed
+because Signal's trademark policy does not allow "Signal" in the names of
+third-party apps. Ubuntu Touch sees the renamed package as a new app, so the
+account and chats have to move once. With the phone connected over USB:
+
+```bash
+clickable build
+sh tools/migrate-from-ubsignal.sh
+```
+
+It installs UT Langis, copies the data over and removes the old app (or says
+how to remove it). The old folders stay as a backup until deleted.
 
 ## Building
 
@@ -133,7 +148,7 @@ Cargo's downloads and compiled dependencies are cached between runs, keyed on
 
 ```
 core/                 Rust backend (static library with a C interface)
-  include/ubsignal_core.h   the C interface the app links against
+  include/utlangis_core.h   the C interface the app links against
   src/lib.rs          C functions, command and event format
   src/worker.rs       backend thread, registration, receive loop start
   src/receiver.rs     receive loop and incoming messages
@@ -150,7 +165,7 @@ i18n/                 translations
 
 ## Data on the phone
 
-Everything lives in `~/.local/share/ubsignal/`: `signal.db3` (keys, sessions,
+Everything lives in `~/.local/share/utlangis/`: `signal.db3` (keys, sessions,
 messages; SQLite), `threads.json` (conversation list) and `attachments/`.
 The app's AppArmor confinement keeps other apps out of it. Deleting the
 folder (or uninstalling) removes the account from this phone; the number then
@@ -166,7 +181,7 @@ Clickable container and fill in the translations:
 docker run --rm -u $(id -u):$(id -g) -v "$PWD":/p -w /p \
   clickable/amd64-20.04-arm64:latest /usr/lib/qt5/bin/lupdate -no-obsolete \
   -locations relative src/*.cpp qml/*.qml \
-  -ts i18n/ubsignal_de.ts i18n/ubsignal_fr.ts i18n/ubsignal_es.ts i18n/ubsignal_it.ts
+  -ts i18n/utlangis_de.ts i18n/utlangis_fr.ts i18n/utlangis_es.ts i18n/utlangis_it.ts
 python3 i18n/translate.py   # fills all languages; lists any text still missing
 ```
 
@@ -175,11 +190,11 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
 - **Build against Qt 5.12** (`ubuntu-sdk-20.04`): `import QtQuick 2.12` at
   most, `Connections { onSignal: … }`.
 - **Lomiri suspends background apps.** The message connection dies while the
-  app is suspended; ubSignal reopens it when it comes back to the foreground
+  app is suspended; UT Langis reopens it when it comes back to the foreground
   and then receives everything that arrived meanwhile. Notifications in the
-  background only work if suspension is turned off for ubSignal (e.g. with
+  background only work if suspension is turned off for UT Langis (e.g. with
   UT Tweak Tool). Signal has no push service for Ubuntu Touch.
-- **Permissions** (`ubsignal.apparmor`): `networking` for Signal's servers,
+- **Permissions** (`utlangis.apparmor`): `networking` for Signal's servers,
   `webview` for the captcha page, `content_exchange` to pick photos from
   other apps, `push-notification-client` for notifications, `contacts` for
   the contact picker, `audio` and `microphone` for voice messages (Ubuntu

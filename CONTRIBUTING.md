@@ -1,4 +1,4 @@
-# Contributing to ubSignal
+# Contributing to UT Langis
 
 These rules keep the code readable for the people who review it — the
 OpenStore reviewers and anyone else reading the repository. They apply to
@@ -83,7 +83,7 @@ These are explained in the README ("Platform constraints"); the short form:
   `Connections { onSignal: … }`.
 - Use `AppLabel` / `AppField`, not bare `Label` / `TextField`.
 - Do not set `QT_QPA_PLATFORM`, `MIR_SOCKET` or plugin paths in code.
-- **Permissions:** `ubsignal.apparmor` lists only policy groups the app
+- **Permissions:** `utlangis.apparmor` lists only policy groups the app
   really uses. Adding one needs a reason in the README.
 - `manifest.json` carries the real maintainer name and a reachable address.
 

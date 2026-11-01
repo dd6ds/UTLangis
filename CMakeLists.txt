@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ubsignal C CXX)
+project(utlangis C CXX)
 
 # clickable's container has CMake 3.31 (see clickable.yaml); it may
 # normalise install() paths (they are plain here) without warning.
@@ -52,7 +52,7 @@ else()
     set(RUST_OUT_DIR ${CMAKE_BINARY_DIR}/cargo-target/release)
 endif()
 
-set(RUST_CORE_LIB ${RUST_OUT_DIR}/libubsignal_core.a)
+set(RUST_CORE_LIB ${RUST_OUT_DIR}/libutlangis_core.a)
 file(GLOB RUST_CORE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/core/src/*.rs)
 
 set(CARGO_ENV
@@ -78,25 +78,25 @@ add_custom_command(
             ${CMAKE_CURRENT_SOURCE_DIR}/core/fix-sqlcipher-c-char.cmake
     COMMENT "Building the Rust Signal backend"
     USES_TERMINAL)
-add_custom_target(ubsignal_core DEPENDS ${RUST_CORE_LIB})
+add_custom_target(utlangis_core DEPENDS ${RUST_CORE_LIB})
 
 # ---------------------------------------------------------------------------
-# Translations: i18n/ubsignal_<lang>.ts -> .qm, embedded as :/i18n/*.qm.
+# Translations: i18n/utlangis_<lang>.ts -> .qm, embedded as :/i18n/*.qm.
 # ---------------------------------------------------------------------------
 find_package(Qt5LinguistTools REQUIRED)
-file(GLOB UBSIGNAL_TS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/i18n/ubsignal_*.ts)
-qt5_add_translation(UBSIGNAL_QM_FILES ${UBSIGNAL_TS_FILES})
-set(UBSIGNAL_I18N_QRC ${CMAKE_CURRENT_BINARY_DIR}/i18n.qrc)
+file(GLOB UTLANGIS_TS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/i18n/utlangis_*.ts)
+qt5_add_translation(UTLANGIS_QM_FILES ${UTLANGIS_TS_FILES})
+set(UTLANGIS_I18N_QRC ${CMAKE_CURRENT_BINARY_DIR}/i18n.qrc)
 set(_i18n_entries "")
-foreach(_qm ${UBSIGNAL_QM_FILES})
+foreach(_qm ${UTLANGIS_QM_FILES})
     get_filename_component(_qm_name ${_qm} NAME)
     string(APPEND _i18n_entries "    <file alias=\"i18n/${_qm_name}\">${_qm}</file>\n")
 endforeach()
-file(WRITE ${UBSIGNAL_I18N_QRC}
+file(WRITE ${UTLANGIS_I18N_QRC}
      "<RCC>\n  <qresource prefix=\"/\">\n${_i18n_entries}  </qresource>\n</RCC>\n")
-add_custom_target(ubsignal_translations DEPENDS ${UBSIGNAL_QM_FILES})
+add_custom_target(utlangis_translations DEPENDS ${UTLANGIS_QM_FILES})
 
-add_executable(ubsignal
+add_executable(utlangis
     src/languagemanager.cpp
     src/languagemanager.h
     src/main.cpp
@@ -113,21 +113,21 @@ add_executable(ubsignal
     src/voicenotes.cpp
     src/voicenotes.h
     qml.qrc
-    ${UBSIGNAL_I18N_QRC})
-add_dependencies(ubsignal ubsignal_translations ubsignal_core)
+    ${UTLANGIS_I18N_QRC})
+add_dependencies(utlangis utlangis_translations utlangis_core)
 
-target_include_directories(ubsignal PRIVATE
+target_include_directories(utlangis PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
 
 # The Rust static library needs pthread, dl and libm from the system, and
 # libstdc++ for the C++ parts of BoringSSL (already linked for Qt).
-target_link_libraries(ubsignal
+target_link_libraries(utlangis
     Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick Qt5::DBus Qt5::WebEngine PkgConfig::GSTREAMER
     ${RUST_CORE_LIB} pthread dl m)
 
-install(TARGETS ubsignal RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(TARGETS utlangis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(FILES manifest.json DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(FILES ubsignal.desktop DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(FILES ubsignal.apparmor DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(FILES ubsignal.png DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES utlangis.desktop DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES utlangis.apparmor DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES utlangis.png DESTINATION ${CMAKE_INSTALL_PREFIX})

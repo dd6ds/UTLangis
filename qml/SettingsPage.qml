@@ -142,8 +142,8 @@ Page {
                 color: page.app.colorSecondaryText
                 font.pixelSize: page.app.fontSecondary
                 text: qsTr("Ubuntu Touch pauses apps in the background, so new messages "
-                           + "arrive when ubSignal is open. To be notified while it is in "
-                           + "the background, prevent app suspension for ubSignal "
+                           + "arrive when UT Langis is open. To be notified while it is in "
+                           + "the background, prevent app suspension for UT Langis "
                            + "(e.g. with UT Tweak Tool).")
             }
         }

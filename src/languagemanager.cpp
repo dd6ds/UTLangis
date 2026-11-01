@@ -15,7 +15,7 @@ const QString kSettingsKey = QStringLiteral("language");
 const QString kSourceLanguage = QStringLiteral("en");
 
 struct Language {
-    const char *code;       // matches i18n/ubsignal_<code>.ts (none for English)
+    const char *code;       // matches i18n/utlangis_<code>.ts (none for English)
     const char *nativeName; // shown untranslated, so everyone finds their own
 };
 
@@ -86,7 +86,7 @@ void LanguageManager::applyTranslation()
     QCoreApplication::removeTranslator(&m_appTranslator);
     QCoreApplication::removeTranslator(&m_qtTranslator);
     const QString code = effectiveLanguage();
-    if (m_appTranslator.load(QStringLiteral(":/i18n/ubsignal_") + code))
+    if (m_appTranslator.load(QStringLiteral(":/i18n/utlangis_") + code))
         QCoreApplication::installTranslator(&m_appTranslator);
     // Qt's own texts (dialog buttons), if the phone has them installed.
     if (m_qtTranslator.load(QStringLiteral("qtbase_") + code,

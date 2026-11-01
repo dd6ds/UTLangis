@@ -88,7 +88,7 @@ pub fn run(data_dir: PathBuf, sink: EventSink, mut commands: UnboundedReceiver<S
 /// RUST_LOG overrides the default level.
 fn init_logging() {
     let filter = tracing_subscriber::EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn,ubsignal_core=info"));
+        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn,utlangis_core=info"));
     let _ = tracing_subscriber::fmt().with_env_filter(filter).with_ansi(false).try_init();
 }
 

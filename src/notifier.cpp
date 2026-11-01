@@ -21,7 +21,7 @@ const QString kPostalService = QStringLiteral("com.lomiri.Postal");
 const QString kPostalPathPrefix = QStringLiteral("/com/lomiri/Postal/");
 const QString kPostalInterface = QStringLiteral("com.lomiri.Postal");
 // Used when not started by lomiri-app-launch (desktop test runs).
-const QString kFallbackAppId = QStringLiteral("ubsignal_ubsignal");
+const QString kFallbackAppId = QStringLiteral("utlangis_utlangis");
 
 const QString kDefaultSound = QStringLiteral("default");
 const QString kEnabledKey = QStringLiteral("notifications/enabled");
@@ -187,7 +187,7 @@ void Notifier::post(const QString &title, const QString &body, bool systemSound)
     const QJsonObject message{{QStringLiteral("notification"), notification}};
 
     const QString id = appId();
-    // The object path is the package name; ubsignal has no characters that
+    // The object path is the package name; utlangis has no characters that
     // would need D-Bus escaping.
     QDBusMessage call = QDBusMessage::createMethodCall(
                 kPostalService, kPostalPathPrefix + id.section(QLatin1Char('_'), 0, 0),

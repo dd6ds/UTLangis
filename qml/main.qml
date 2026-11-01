@@ -13,7 +13,7 @@ ApplicationWindow {
     visible: true
     width: Screen.width
     height: Screen.height
-    title: "ubSignal"
+    title: "UT Langis"
     color: colorBackground
 
     // --- Scaling -----------------------------------------------------------

@@ -22,7 +22,7 @@
 static QString dataDir()
 {
     const QString dir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
-            + QStringLiteral("/ubsignal");
+            + QStringLiteral("/utlangis");
     QDir().mkpath(dir);
     return dir;
 }
@@ -43,16 +43,16 @@ static SignalClient *exposeBackend(QQmlApplicationEngine &engine)
     auto *client = new SignalClient(dataDir(), notifier, &engine);
     engine.rootContext()->setContextProperty(QStringLiteral("Notifications"), notifier);
     qmlRegisterUncreatableType<ThreadListModel>(
-        "ubSignal", 1, 0, "ThreadListModel", QStringLiteral("Provided by Signal.threads"));
+        "UTLangis", 1, 0, "ThreadListModel", QStringLiteral("Provided by Signal.threads"));
     qmlRegisterUncreatableType<MessageListModel>(
-        "ubSignal", 1, 0, "MessageListModel", QStringLiteral("Provided by Signal.messages"));
+        "UTLangis", 1, 0, "MessageListModel", QStringLiteral("Provided by Signal.messages"));
     engine.rootContext()->setContextProperty(QStringLiteral("Signal"), client);
     // Installs the translation before the first page is created.
     engine.rootContext()->setContextProperty(QStringLiteral("Language"),
                                              new LanguageManager(&engine, &engine));
     // Recordings wait in the app's cache dir until the backend has sent them.
     const QString recordDir = QStandardPaths::writableLocation(
-            QStandardPaths::GenericCacheLocation) + QStringLiteral("/ubsignal/voice");
+            QStandardPaths::GenericCacheLocation) + QStringLiteral("/utlangis/voice");
     engine.rootContext()->setContextProperty(QStringLiteral("Voice"),
                                              new VoiceNotes(recordDir, &engine));
     engine.rootContext()->setContextProperty(QStringLiteral("SystemTheme"),
@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
     // Shares the OpenGL context the captcha page's web view needs; must come
     // before the first Qt Quick window.
     QtWebEngine::initialize();
-    app.setApplicationName(QStringLiteral("ubSignal"));
-    app.setOrganizationName(QStringLiteral("ubsignal"));
+    app.setApplicationName(QStringLiteral("UTLangis"));
+    app.setOrganizationName(QStringLiteral("utlangis"));
 
     QQmlApplicationEngine engine;
     SignalClient *client = exposeBackend(engine);
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     if (engine.rootObjects().isEmpty()) {
-        qWarning() << "ubSignal: failed to load QML";
+        qWarning() << "UT Langis: failed to load QML";
         return -1;
     }
     return app.exec();

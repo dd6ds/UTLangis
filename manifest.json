@@ -1,17 +1,17 @@
 {
-  "name": "ubsignal",
-  "title": "ubSignal",
-  "version": "0.2.7",
+  "name": "utlangis",
+  "title": "UT Langis",
+  "version": "0.3.0",
   "description": "Signal messenger for Ubuntu Touch, registered as the primary device of your number",
   "maintainer": "Developer <developer@example.com>",
   "architecture": "$ENV{CLICK_ARCH}",
   "framework": "ubuntu-sdk-20.04",
   "hooks": {
-    "ubsignal": {
-      "apparmor": "ubsignal.apparmor",
-      "desktop": "ubsignal.desktop"
+    "utlangis": {
+      "apparmor": "utlangis.apparmor",
+      "desktop": "utlangis.desktop"
     }
   },
   "type": "app",
-  "icon": "ubsignal.png"
+  "icon": "utlangis.png"
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fills i18n/ubsignal_<lang>.ts with the translations below.
+"""Fills i18n/utlangis_<lang>.ts with the translations below.
 
 Workflow when texts change:
   1. lupdate (see README, "Translations") to refresh the .ts files
@@ -15,17 +15,17 @@ import xml.etree.ElementTree as ET
 LINK_INTRO = 'Use the Signal account of your other phone on this one as well, like Signal Desktop. Both stay signed in.'
 SCAN = 'On your other phone, open Signal → Settings → Linked devices, tap + and scan this code.'
 LINKED = 'This phone is a linked device. The profile is managed on the phone the account was registered with.'
-INTRO = ("ubSignal becomes the Signal app for your number on this phone. Signal on "
+INTRO = ("UT Langis becomes the Signal app for your number on this phone. Signal on "
          "another phone with the same number will be signed out.")
 REGLOCK = ("If you set a Signal PIN with registration lock, turn the lock off in your "
            "old Signal app first.")
-CONTACTS_ASK = ("ubSignal would like to read your address book so you can pick the "
+CONTACTS_ASK = ("UT Langis would like to read your address book so you can pick the "
                 "person to write to.")
 CONTACTS_PRIVACY = ("Your contacts stay on this phone. Only the number you choose is "
                     "looked up at Signal. You can change this later in Settings.")
 BACKGROUND = ("Ubuntu Touch pauses apps in the background, so new messages arrive when "
-              "ubSignal is open. To be notified while it is in the background, prevent "
-              "app suspension for ubSignal (e.g. with UT Tweak Tool).")
+              "UT Langis is open. To be notified while it is in the background, prevent "
+              "app suspension for UT Langis (e.g. with UT Tweak Tool).")
 
 DE = {
     "Phone number": 'Telefonnummer',
@@ -79,7 +79,7 @@ DE = {
     "Light": "Hell",
     "Dark": "Dunkel",
     "Set up Signal": "Signal einrichten",
-    INTRO: "ubSignal wird auf diesem Telefon die Signal-App für deine Nummer. Signal "
+    INTRO: "UT Langis wird auf diesem Telefon die Signal-App für deine Nummer. Signal "
            "auf einem anderen Telefon mit derselben Nummer wird abgemeldet.",
     REGLOCK: "Falls du eine Signal-PIN mit Registrierungssperre hast, schalte die "
              "Sperre vorher in deiner alten Signal-App aus.",
@@ -118,7 +118,7 @@ DE = {
     "Start chat": "Chat starten",
     "This number does not use Signal.": "Diese Nummer nutzt kein Signal.",
     "Access contacts?": "Zugriff auf Kontakte?",
-    CONTACTS_ASK: "ubSignal möchte dein Adressbuch lesen, damit du auswählen kannst, "
+    CONTACTS_ASK: "UT Langis möchte dein Adressbuch lesen, damit du auswählen kannst, "
                   "wem du schreibst.",
     CONTACTS_PRIVACY: "Deine Kontakte bleiben auf diesem Telefon. Nur die Nummer, die du "
                       "auswählst, wird bei Signal nachgeschlagen. Du kannst das später "
@@ -140,8 +140,8 @@ DE = {
     "New message": "Neue Nachricht",
     "Registered number: %1": "Registrierte Nummer: %1",
     BACKGROUND: "Ubuntu Touch pausiert Apps im Hintergrund, daher kommen neue "
-                "Nachrichten an, wenn ubSignal geöffnet ist. Um auch im Hintergrund "
-                "benachrichtigt zu werden, verhindere das Pausieren für ubSignal "
+                "Nachrichten an, wenn UT Langis geöffnet ist. Um auch im Hintergrund "
+                "benachrichtigt zu werden, verhindere das Pausieren für UT Langis "
                 "(z. B. mit dem UT Tweak Tool).",
 }
 
@@ -197,7 +197,7 @@ FR = {
     "Light": "Clair",
     "Dark": "Sombre",
     "Set up Signal": "Configurer Signal",
-    INTRO: "ubSignal devient l'application Signal de votre numéro sur ce téléphone. "
+    INTRO: "UT Langis devient l'application Signal de votre numéro sur ce téléphone. "
            "Signal sera déconnecté sur tout autre téléphone utilisant le même numéro.",
     REGLOCK: "Si vous avez défini un code PIN Signal avec verrou d'inscription, "
              "désactivez d'abord le verrou dans votre ancienne application Signal.",
@@ -236,7 +236,7 @@ FR = {
     "Start chat": "Démarrer la conversation",
     "This number does not use Signal.": "Ce numéro n'utilise pas Signal.",
     "Access contacts?": "Accéder aux contacts ?",
-    CONTACTS_ASK: "ubSignal souhaite lire votre carnet d'adresses pour que vous puissiez "
+    CONTACTS_ASK: "UT Langis souhaite lire votre carnet d'adresses pour que vous puissiez "
                   "choisir la personne à qui écrire.",
     CONTACTS_PRIVACY: "Vos contacts restent sur ce téléphone. Seul le numéro choisi est "
                       "recherché auprès de Signal. Vous pourrez modifier cela plus tard "
@@ -258,8 +258,8 @@ FR = {
     "New message": "Nouveau message",
     "Registered number: %1": "Numéro enregistré : %1",
     BACKGROUND: "Ubuntu Touch met les applications en pause en arrière-plan : les "
-                "nouveaux messages arrivent quand ubSignal est ouvert. Pour être "
-                "notifié en arrière-plan, empêchez la mise en pause d'ubSignal "
+                "nouveaux messages arrivent quand UT Langis est ouvert. Pour être "
+                "notifié en arrière-plan, empêchez la mise en pause d'UT Langis "
                 "(p. ex. avec UT Tweak Tool).",
 }
 
@@ -315,7 +315,7 @@ ES = {
     "Light": "Claro",
     "Dark": "Oscuro",
     "Set up Signal": "Configurar Signal",
-    INTRO: "ubSignal se convierte en la app de Signal de tu número en este teléfono. "
+    INTRO: "UT Langis se convierte en la app de Signal de tu número en este teléfono. "
            "Signal se cerrará en cualquier otro teléfono con el mismo número.",
     REGLOCK: "Si tienes un PIN de Signal con bloqueo de registro, desactiva primero el "
              "bloqueo en tu antigua app de Signal.",
@@ -354,7 +354,7 @@ ES = {
     "Start chat": "Iniciar chat",
     "This number does not use Signal.": "Este número no usa Signal.",
     "Access contacts?": "¿Acceder a los contactos?",
-    CONTACTS_ASK: "ubSignal quiere leer tu agenda para que puedas elegir a quién "
+    CONTACTS_ASK: "UT Langis quiere leer tu agenda para que puedas elegir a quién "
                   "escribir.",
     CONTACTS_PRIVACY: "Tus contactos se quedan en este teléfono. Solo se consulta en "
                       "Signal el número que elijas. Puedes cambiarlo más tarde en "
@@ -376,8 +376,8 @@ ES = {
     "New message": "Nuevo mensaje",
     "Registered number: %1": "Número registrado: %1",
     BACKGROUND: "Ubuntu Touch pausa las apps en segundo plano, así que los mensajes "
-                "nuevos llegan cuando ubSignal está abierta. Para recibir avisos en "
-                "segundo plano, impide que ubSignal se pause (p. ej. con UT Tweak "
+                "nuevos llegan cuando UT Langis está abierta. Para recibir avisos en "
+                "segundo plano, impide que UT Langis se pause (p. ej. con UT Tweak "
                 "Tool).",
 }
 
@@ -433,7 +433,7 @@ IT = {
     "Light": "Chiaro",
     "Dark": "Scuro",
     "Set up Signal": "Configura Signal",
-    INTRO: "ubSignal diventa l'app Signal del tuo numero su questo telefono. Signal "
+    INTRO: "UT Langis diventa l'app Signal del tuo numero su questo telefono. Signal "
            "verrà disconnesso su qualsiasi altro telefono con lo stesso numero.",
     REGLOCK: "Se hai impostato un PIN di Signal con blocco della registrazione, "
              "disattiva prima il blocco nella tua vecchia app Signal.",
@@ -472,7 +472,7 @@ IT = {
     "Start chat": "Avvia chat",
     "This number does not use Signal.": "Questo numero non usa Signal.",
     "Access contacts?": "Accedere ai contatti?",
-    CONTACTS_ASK: "ubSignal vorrebbe leggere la tua rubrica per permetterti di scegliere "
+    CONTACTS_ASK: "UT Langis vorrebbe leggere la tua rubrica per permetterti di scegliere "
                   "a chi scrivere.",
     CONTACTS_PRIVACY: "I tuoi contatti restano su questo telefono. Solo il numero che "
                       "scegli viene cercato su Signal. Puoi cambiare questa scelta più "
@@ -494,8 +494,8 @@ IT = {
     "New message": "Nuovo messaggio",
     "Registered number: %1": "Numero registrato: %1",
     BACKGROUND: "Ubuntu Touch mette in pausa le app in background, quindi i nuovi "
-                "messaggi arrivano quando ubSignal è aperta. Per ricevere notifiche in "
-                "background, impedisci la sospensione di ubSignal (ad es. con UT "
+                "messaggi arrivano quando UT Langis è aperta. Per ricevere notifiche in "
+                "background, impedisci la sospensione di UT Langis (ad es. con UT "
                 "Tweak Tool).",
 }
 
@@ -503,7 +503,7 @@ LANGUAGES = {"de": DE, "fr": FR, "es": ES, "it": IT}
 
 
 def translate(code, texts):
-    path = f"i18n/ubsignal_{code}.ts"
+    path = f"i18n/utlangis_{code}.ts"
     tree = ET.parse(path)
     missing = []
     for message in tree.iter("message"):

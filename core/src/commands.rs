@@ -104,7 +104,7 @@ pub enum Command {
 }
 
 fn default_device_name() -> String {
-    "ubSignal (Ubuntu Touch)".to_owned()
+    "UT Langis (Ubuntu Touch)".to_owned()
 }
 
 /// A reply's reference to an earlier message of the conversation.

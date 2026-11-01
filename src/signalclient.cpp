@@ -10,7 +10,7 @@
 #include <QSettings>
 #include <QUrl>
 
-#include "ubsignal_core.h"
+#include "utlangis_core.h"
 
 namespace {
 const QString kReadReceiptsKey = QStringLiteral("readReceipts");
@@ -21,7 +21,7 @@ SignalClient::SignalClient(const QString &dataDir, Notifier *notifier, QObject *
 {
     // On by default, like in Signal's own apps.
     m_sendReadReceipts = QSettings().value(kReadReceiptsKey, true).toBool();
-    m_started = ubsignal_start(dataDir.toUtf8().constData(), &SignalClient::eventCallback, this);
+    m_started = utlangis_start(dataDir.toUtf8().constData(), &SignalClient::eventCallback, this);
     if (!m_started)
         qWarning() << "SignalClient: backend did not start, data dir" << dataDir;
 }
@@ -30,7 +30,7 @@ SignalClient::~SignalClient()
 {
     // Waits for the backend thread, so no callback can arrive afterwards.
     if (m_started)
-        ubsignal_stop();
+        utlangis_stop();
 }
 
 // Runs on the backend thread: hand the event over to the GUI thread.
@@ -43,7 +43,7 @@ void SignalClient::eventCallback(void *context, const char *json)
 
 void SignalClient::command(const QJsonObject &command)
 {
-    ubsignal_command(QJsonDocument(command).toJson(QJsonDocument::Compact).constData());
+    utlangis_command(QJsonDocument(command).toJson(QJsonDocument::Compact).constData());
 }
 
 void SignalClient::setBusy(bool busy)
