@@ -14,7 +14,7 @@ QML, like the other ubTouch apps.
 
 | Chats | New chat | Settings |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/chats.png" alt="UT Langis conversation list" width="250"> | <img src="docs/screenshots/new-chat.png" alt="UT Langis new chat dialog with contact picker and number field" width="250"> | <img src="docs/screenshots/settings.png" alt="UT Langis settings with contacts permission and appearance" width="250"> |
+| <img src="docs/screenshots/chats.png" alt="UT Langis conversation list" width="250"> | <img src="docs/screenshots/new-chat.png" alt="UT Langis new chat dialog with contact picker and number field" width="250"> | <img src="docs/screenshots/settings.png" alt="UT Langis settings with notifications and appearance" width="250"> |
 
 Names and numbers in the screenshots are placeholders.
 
@@ -38,9 +38,9 @@ Names and numbers in the screenshots are placeholders.
   of it, as in Signal's own apps
 - Delete messages (press and hold): for this phone, or for everyone within
   24 hours of sending; deletions by others are applied too
-- New chats by phone number or picked from the address book (after asking
-  for permission once; Signal contact discovery is only asked about the
-  chosen number)
+- New chats by phone number or with a contact picked in the Contacts app
+  (the app sees only that contact; Signal contact discovery is only asked
+  about the chosen number)
 - Conversation list with unread counts, notifications while the app runs:
   sound selectable (phone default, silent, any of the phone's notification
   sounds), off for all chats or muted per chat (🔔/🔕 in the chat)
@@ -268,13 +268,13 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
   background only work if suspension is turned off for UT Langis (e.g. with
   UT Tweak Tool). Signal has no push service for Ubuntu Touch.
 - **Permissions** (`utlangis.apparmor`): `networking` for Signal's servers,
-  `webview` for the captcha page, `content_exchange` to pick photos from
-  other apps, `push-notification-client` for notifications, `contacts` for
-  the contact picker, `audio` and `microphone` for voice messages (Ubuntu
-  Touch asks once before the microphone is used). The app reads the address
-  book only after the user allowed it in its own dialog (or in Settings).
-  `contacts` is a reserved policy group: sideloading works, the OpenStore
-  would review it manually.
+  `webview` for the captcha page, `content_exchange` to pick photos and
+  contacts in other apps, `push-notification-client` for notifications,
+  `audio` and `microphone` for voice messages (Ubuntu Touch asks once before
+  the microphone is used). There is deliberately no `contacts` group: a new
+  chat's contact is picked in the Contacts app through the Content Hub, so
+  the app only ever sees that one contact, and the OpenStore accepts the
+  package without manual review.
 - **`QT_QUICK_CONTROLS_STYLE=Default` is set in `main.cpp`**, and pages use
   `AppLabel` / `AppField` so both light and dark theme stay readable.
 

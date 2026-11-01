@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <title>UT Langis</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f7cf0"/>
+      <stop offset="1" stop-color="#1e4fbf"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#background)"/>
+  <!-- Speech bubble with its tail at the lower left -->
+  <ellipse cx="128" cy="122" rx="82" ry="70" fill="#ffffff"/>
+  <polygon points="78,165 65,204 110,180" fill="#ffffff"/>
+  <!-- Typing dots -->
+  <circle cx="94" cy="122" r="11" fill="#2c6bed"/>
+  <circle cx="128" cy="122" r="11" fill="#2c6bed"/>
+  <circle cx="162" cy="122" r="11" fill="#2c6bed"/>
+</svg>

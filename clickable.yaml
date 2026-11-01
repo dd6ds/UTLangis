@@ -8,11 +8,6 @@ kill: utlangis
 restrict_arch: arm64
 framework: ubuntu-sdk-20.04
 
-# 'contacts' is a reserved AppArmor policy group: click-review flags it as
-# NEEDS REVIEW. That only matters for publishing to the OpenStore (manual
-# vetting); sideloaded packages work fine with it.
-ignore_review_errors: true
-
 # QtWebEngine shows Signal's registration captcha (CaptchaPage.qml);
 # GStreamer records and plays voice messages (src/voicenotes.cpp).
 dependencies_target:

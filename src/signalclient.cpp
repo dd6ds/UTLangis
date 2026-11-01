@@ -11,6 +11,7 @@
 #include <QUrl>
 
 #include "utlangis_core.h"
+#include "vcard.h"
 
 namespace {
 const QString kReadReceiptsKey = QStringLiteral("readReceipts");
@@ -160,6 +161,13 @@ void SignalClient::renameThread(const QString &name)
     command({{QStringLiteral("cmd"), QStringLiteral("renameThread")},
              {QStringLiteral("thread"), m_currentThread},
              {QStringLiteral("name"), name}});
+}
+
+QVariantMap SignalClient::readContactCard(const QString &url) const
+{
+    const VCardContact contact = readVCardFile(QUrl(url).toLocalFile());
+    return {{QStringLiteral("name"), contact.name},
+            {QStringLiteral("numbers"), contact.numbers}};
 }
 
 void SignalClient::startChat(const QString &phone, const QString &name)

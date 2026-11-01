@@ -2,8 +2,9 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-// Settings: the registered number, the profile name, contacts access, the
-// language and the light/dark appearance, plus a note on running in the background.
+// Settings: the registered number, the profile name, notifications, read
+// receipts, the language and the light/dark appearance, plus a note on
+// running in the background.
 Page {
     id: page
     property var app
@@ -51,22 +52,6 @@ Page {
                 visible: !Signal.linked
                 text: qsTr("Change profile name")
                 onClicked: profileDialog.open()
-            }
-
-            // Turning this on here is the user's explicit permission, like
-            // "Allow" in ContactsConsentDialog.
-            Switch {
-                id: contactsSwitch
-                Layout.fillWidth: true
-                text: qsTr("Allow access to contacts")
-                checked: page.app.settings.contactsAccess === "allowed"
-                onToggled: page.app.settings.contactsAccess = checked ? "allowed" : "denied"
-                contentItem: AppLabel {
-                    leftPadding: contactsSwitch.indicator.width + contactsSwitch.spacing
-                    text: contactsSwitch.text
-                    wrapMode: Text.Wrap
-                    verticalAlignment: Text.AlignVCenter
-                }
             }
 
             Switch {

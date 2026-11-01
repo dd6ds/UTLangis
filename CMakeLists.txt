@@ -110,6 +110,8 @@ add_executable(utlangis
     src/systemtheme.h
     src/threadlistmodel.cpp
     src/threadlistmodel.h
+    src/vcard.cpp
+    src/vcard.h
     src/voicenotes.cpp
     src/voicenotes.h
     qml.qrc

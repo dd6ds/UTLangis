@@ -1,5 +1,5 @@
 {
   "policy_version": 20.04,
   "policy_groups": ["networking", "webview", "content_exchange", "push-notification-client",
-                    "contacts", "audio", "microphone"]
+                    "audio", "microphone"]
 }

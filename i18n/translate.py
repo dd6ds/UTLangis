@@ -19,15 +19,14 @@ INTRO = ("UT Langis becomes the Signal app for your number on this phone. Signal
          "another phone with the same number will be signed out.")
 REGLOCK = ("If you set a Signal PIN with registration lock, turn the lock off in your "
            "old Signal app first.")
-CONTACTS_ASK = ("UT Langis would like to read your address book so you can pick the "
-                "person to write to.")
-CONTACTS_PRIVACY = ("Your contacts stay on this phone. Only the number you choose is "
-                    "looked up at Signal. You can change this later in Settings.")
 BACKGROUND = ("Ubuntu Touch pauses apps in the background, so new messages arrive when "
               "UT Langis is open. To be notified while it is in the background, prevent "
               "app suspension for UT Langis (e.g. with UT Tweak Tool).")
 
 DE = {
+    "Choose a contact from": "Kontakt auswählen aus",
+    "Choose a number": "Nummer auswählen",
+    "This contact has no phone number.": "Dieser Kontakt hat keine Telefonnummer.",
     "Phone number": 'Telefonnummer',
     "Link device": 'Gerät koppeln',
     LINK_INTRO: 'Nutze das Signal-Konto deines anderen Telefons auch auf diesem, wie Signal Desktop. Beide bleiben angemeldet.',
@@ -117,20 +116,6 @@ DE = {
     "Looking up...": "Wird gesucht...",
     "Start chat": "Chat starten",
     "This number does not use Signal.": "Diese Nummer nutzt kein Signal.",
-    "Access contacts?": "Zugriff auf Kontakte?",
-    CONTACTS_ASK: "UT Langis möchte dein Adressbuch lesen, damit du auswählen kannst, "
-                  "wem du schreibst.",
-    CONTACTS_PRIVACY: "Deine Kontakte bleiben auf diesem Telefon. Nur die Nummer, die du "
-                      "auswählst, wird bei Signal nachgeschlagen. Du kannst das später "
-                      "in den Einstellungen ändern.",
-    "Allow": "Erlauben",
-    "Don't allow": "Nicht erlauben",
-    "Access to contacts is off. You can allow it in Settings.":
-        "Der Zugriff auf Kontakte ist aus. Du kannst ihn in den Einstellungen erlauben.",
-    "Allow access to contacts": "Zugriff auf Kontakte erlauben",
-    "Contacts": "Kontakte",
-    "Search": "Suchen",
-    "No contacts found.": "Keine Kontakte gefunden.",
     "Message": "Nachricht",
     "Send": "Senden",
     "Attach photo": "Foto anhängen",
@@ -146,6 +131,9 @@ DE = {
 }
 
 FR = {
+    "Choose a contact from": "Choisir un contact dans",
+    "Choose a number": "Choisir un numéro",
+    'This contact has no phone number.': "Ce contact n'a pas de numéro de téléphone.",
     "Phone number": 'Numéro de téléphone',
     "Link device": 'Associer un appareil',
     LINK_INTRO: 'Utilisez aussi sur ce téléphone le compte Signal de votre autre téléphone, comme Signal Desktop. Les deux restent connectés.',
@@ -235,20 +223,6 @@ FR = {
     "Looking up...": "Recherche...",
     "Start chat": "Démarrer la conversation",
     "This number does not use Signal.": "Ce numéro n'utilise pas Signal.",
-    "Access contacts?": "Accéder aux contacts ?",
-    CONTACTS_ASK: "UT Langis souhaite lire votre carnet d'adresses pour que vous puissiez "
-                  "choisir la personne à qui écrire.",
-    CONTACTS_PRIVACY: "Vos contacts restent sur ce téléphone. Seul le numéro choisi est "
-                      "recherché auprès de Signal. Vous pourrez modifier cela plus tard "
-                      "dans les paramètres.",
-    "Allow": "Autoriser",
-    "Don't allow": "Ne pas autoriser",
-    "Access to contacts is off. You can allow it in Settings.":
-        "L'accès aux contacts est désactivé. Vous pouvez l'autoriser dans les paramètres.",
-    "Allow access to contacts": "Autoriser l'accès aux contacts",
-    "Contacts": "Contacts",
-    "Search": "Rechercher",
-    "No contacts found.": "Aucun contact trouvé.",
     "Message": "Message",
     "Send": "Envoyer",
     "Attach photo": "Joindre une photo",
@@ -264,6 +238,9 @@ FR = {
 }
 
 ES = {
+    "Choose a contact from": "Elegir un contacto de",
+    "Choose a number": "Elegir un número",
+    "This contact has no phone number.": "Este contacto no tiene número de teléfono.",
     "Phone number": 'Número de teléfono',
     "Link device": 'Vincular dispositivo',
     LINK_INTRO: 'Usa también en este teléfono la cuenta de Signal de tu otro teléfono, como Signal Desktop. Ambos siguen conectados.',
@@ -353,20 +330,6 @@ ES = {
     "Looking up...": "Buscando...",
     "Start chat": "Iniciar chat",
     "This number does not use Signal.": "Este número no usa Signal.",
-    "Access contacts?": "¿Acceder a los contactos?",
-    CONTACTS_ASK: "UT Langis quiere leer tu agenda para que puedas elegir a quién "
-                  "escribir.",
-    CONTACTS_PRIVACY: "Tus contactos se quedan en este teléfono. Solo se consulta en "
-                      "Signal el número que elijas. Puedes cambiarlo más tarde en "
-                      "Ajustes.",
-    "Allow": "Permitir",
-    "Don't allow": "No permitir",
-    "Access to contacts is off. You can allow it in Settings.":
-        "El acceso a los contactos está desactivado. Puedes permitirlo en Ajustes.",
-    "Allow access to contacts": "Permitir el acceso a los contactos",
-    "Contacts": "Contactos",
-    "Search": "Buscar",
-    "No contacts found.": "No se encontraron contactos.",
     "Message": "Mensaje",
     "Send": "Enviar",
     "Attach photo": "Adjuntar foto",
@@ -382,6 +345,9 @@ ES = {
 }
 
 IT = {
+    "Choose a contact from": "Scegli un contatto da",
+    "Choose a number": "Scegli un numero",
+    "This contact has no phone number.": "Questo contatto non ha un numero di telefono.",
     "Phone number": 'Numero di telefono',
     "Link device": 'Collega dispositivo',
     LINK_INTRO: "Usa anche su questo telefono l'account Signal dell'altro telefono, come Signal Desktop. Entrambi restano connessi.",
@@ -471,20 +437,6 @@ IT = {
     "Looking up...": "Ricerca...",
     "Start chat": "Avvia chat",
     "This number does not use Signal.": "Questo numero non usa Signal.",
-    "Access contacts?": "Accedere ai contatti?",
-    CONTACTS_ASK: "UT Langis vorrebbe leggere la tua rubrica per permetterti di scegliere "
-                  "a chi scrivere.",
-    CONTACTS_PRIVACY: "I tuoi contatti restano su questo telefono. Solo il numero che "
-                      "scegli viene cercato su Signal. Puoi cambiare questa scelta più "
-                      "tardi nelle impostazioni.",
-    "Allow": "Consenti",
-    "Don't allow": "Non consentire",
-    "Access to contacts is off. You can allow it in Settings.":
-        "L'accesso ai contatti è disattivato. Puoi consentirlo nelle impostazioni.",
-    "Allow access to contacts": "Consenti l'accesso ai contatti",
-    "Contacts": "Contatti",
-    "Search": "Cerca",
-    "No contacts found.": "Nessun contatto trovato.",
     "Message": "Messaggio",
     "Send": "Invia",
     "Attach photo": "Allega foto",

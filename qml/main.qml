@@ -79,9 +79,6 @@ ApplicationWindow {
         property string phone: "+49"
         // Whether the user was asked for a profile name after registering.
         property bool profileAsked: false
-        // Address book access: "ask" until the user answered
-        // ContactsConsentDialog, then "allowed" or "denied".
-        property string contactsAccess: "ask"
     }
     property alias settings: settings
 
@@ -121,14 +118,22 @@ ApplicationWindow {
         stack.push(Qt.resolvedUrl("ChatPage.qml"), { app: rootWindow })
     }
 
-    // Opens the contact picker, asking for permission first if needed.
+    // Lets the user pick a contact in the Contacts app (ContactImportPicker);
+    // the app itself has no access to the address book.
     function chooseContact() {
-        if (settings.contactsAccess === "allowed")
-            stack.push(Qt.resolvedUrl("ContactPickerPage.qml"), { app: rootWindow })
-        else if (settings.contactsAccess === "ask")
-            contactsConsent.open()
+        contactImport.open()
+    }
+
+    // Starts a chat with a picked contact; one with several numbers asks
+    // which one to use.
+    function startChatWith(url) {
+        var contact = Signal.readContactCard(url)
+        if (!contact.numbers.length)
+            showNote(qsTr("This contact has no phone number."))
+        else if (contact.numbers.length === 1)
+            Signal.startChat(contact.numbers[0], contact.name)
         else
-            showNote(qsTr("Access to contacts is off. You can allow it in Settings."))
+            numberChoice.openFor(contact)
     }
 
     function openImage(path) {
@@ -189,10 +194,14 @@ ApplicationWindow {
     }
     property alias stack: stack
 
-    ContactsConsentDialog {
-        id: contactsConsent
+    ContactImportPicker {
+        id: contactImport
+        onImported: rootWindow.startChatWith(url)
+    }
+
+    NumberChoiceDialog {
+        id: numberChoice
         app: rootWindow
-        onAllowed: rootWindow.chooseContact()
     }
 
     Note {

@@ -185,49 +185,11 @@
     </message>
 </context>
 <context>
-    <name>ContactPickerPage</name>
+    <name>ContactImportPicker</name>
     <message>
-        <location filename="../qml/ContactPickerPage.qml" line="+18" />
-        <source>Contacts</source>
-        <translation>Contacts</translation>
-    </message>
-    <message>
-        <location line="+48" />
-        <source>Search</source>
-        <translation>Rechercher</translation>
-    </message>
-    <message>
-        <location line="+54" />
-        <source>No contacts found.</source>
-        <translation>Aucun contact trouvé.</translation>
-    </message>
-</context>
-<context>
-    <name>ContactsConsentDialog</name>
-    <message>
-        <location filename="../qml/ContactsConsentDialog.qml" line="+19" />
-        <source>Access contacts?</source>
-        <translation>Accéder aux contacts ?</translation>
-    </message>
-    <message>
-        <location line="+4" />
-        <source>Don't allow</source>
-        <translation>Ne pas autoriser</translation>
-    </message>
-    <message>
-        <location line="+4" />
-        <source>Allow</source>
-        <translation>Autoriser</translation>
-    </message>
-    <message>
-        <location line="+20" />
-        <source>UT Langis would like to read your address book so you can pick the person to write to.</source>
-        <translation>UT Langis souhaite lire votre carnet d'adresses pour que vous puissiez choisir la personne à qui écrire.</translation>
-    </message>
-    <message>
-        <location line="+9" />
-        <source>Your contacts stay on this phone. Only the number you choose is looked up at Signal. You can change this later in Settings.</source>
-        <translation>Vos contacts restent sur ce téléphone. Seul le numéro choisi est recherché auprès de Signal. Vous pourrez modifier cela plus tard dans les paramètres.</translation>
+        <location filename="../qml/ContactImportPicker.qml" line="+34" />
+        <source>Choose a contact from</source>
+        <translation>Choisir un contact dans</translation>
     </message>
 </context>
 <context>
@@ -349,6 +311,14 @@
         <location line="+5" />
         <source>New message</source>
         <translation>Nouveau message</translation>
+    </message>
+</context>
+<context>
+    <name>NumberChoiceDialog</name>
+    <message>
+        <location filename="../qml/NumberChoiceDialog.qml" line="+21" />
+        <source>Choose a number</source>
+        <translation>Choisir un numéro</translation>
     </message>
 </context>
 <context>
@@ -478,7 +448,7 @@
 <context>
     <name>SettingsPage</name>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="+15" />
+        <location filename="../qml/SettingsPage.qml" line="+16" />
         <source>Settings</source>
         <translation>Paramètres</translation>
     </message>
@@ -498,12 +468,7 @@
         <translation>Modifier le nom de profil</translation>
     </message>
     <message>
-        <location line="+9" />
-        <source>Allow access to contacts</source>
-        <translation>Autoriser l'accès aux contacts</translation>
-    </message>
-    <message>
-        <location line="+14" />
+        <location line="+7" />
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
@@ -552,12 +517,12 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../qml/main.qml" line="+131" />
-        <source>Access to contacts is off. You can allow it in Settings.</source>
-        <translation>L'accès aux contacts est désactivé. Vous pouvez l'autoriser dans les paramètres.</translation>
+        <location filename="../qml/main.qml" line="+132" />
+        <source>This contact has no phone number.</source>
+        <translation>Ce contact n'a pas de numéro de téléphone.</translation>
     </message>
     <message>
-        <location line="+20" />
+        <location line="+24" />
         <source>Signal asks for a captcha. Please solve it again.</source>
         <translation>Signal demande un captcha. Veuillez le résoudre à nouveau.</translation>
     </message>

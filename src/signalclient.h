@@ -63,7 +63,9 @@ public:
                                  const QVariantMap &quote);
     // Sends a recording from VoiceNotes as a voice message.
     Q_INVOKABLE void sendVoiceNote(const QString &url);
-    // name: from the address book, "" for a typed number.
+    // Reads a contact picked in the Contacts app (vCard file URL from the
+    // Content Hub) as { name, numbers: [..] }.
+    Q_INVOKABLE QVariantMap readContactCard(const QString &url) const;
     // Deletes a message of the open chat (ts = its sent time); `everyone`
     // also asks the other side(s) to delete it.
     Q_INVOKABLE void deleteMessage(qint64 ts, bool everyone);
@@ -72,6 +74,7 @@ public:
     Q_INVOKABLE void react(qint64 ts, const QString &author, const QString &emoji, bool remove);
     // Own name for the open one-to-one chat; "" = the Signal profile name.
     Q_INVOKABLE void renameThread(const QString &name);
+    // name: from the Contacts app, "" for a typed number.
     Q_INVOKABLE void startChat(const QString &phone, const QString &name);
     // Called when the app comes back from being suspended.
     void reconnect();

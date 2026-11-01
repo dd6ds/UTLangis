@@ -185,49 +185,11 @@
     </message>
 </context>
 <context>
-    <name>ContactPickerPage</name>
+    <name>ContactImportPicker</name>
     <message>
-        <location filename="../qml/ContactPickerPage.qml" line="+18" />
-        <source>Contacts</source>
-        <translation>Contatti</translation>
-    </message>
-    <message>
-        <location line="+48" />
-        <source>Search</source>
-        <translation>Cerca</translation>
-    </message>
-    <message>
-        <location line="+54" />
-        <source>No contacts found.</source>
-        <translation>Nessun contatto trovato.</translation>
-    </message>
-</context>
-<context>
-    <name>ContactsConsentDialog</name>
-    <message>
-        <location filename="../qml/ContactsConsentDialog.qml" line="+19" />
-        <source>Access contacts?</source>
-        <translation>Accedere ai contatti?</translation>
-    </message>
-    <message>
-        <location line="+4" />
-        <source>Don't allow</source>
-        <translation>Non consentire</translation>
-    </message>
-    <message>
-        <location line="+4" />
-        <source>Allow</source>
-        <translation>Consenti</translation>
-    </message>
-    <message>
-        <location line="+20" />
-        <source>UT Langis would like to read your address book so you can pick the person to write to.</source>
-        <translation>UT Langis vorrebbe leggere la tua rubrica per permetterti di scegliere a chi scrivere.</translation>
-    </message>
-    <message>
-        <location line="+9" />
-        <source>Your contacts stay on this phone. Only the number you choose is looked up at Signal. You can change this later in Settings.</source>
-        <translation>I tuoi contatti restano su questo telefono. Solo il numero che scegli viene cercato su Signal. Puoi cambiare questa scelta più tardi nelle impostazioni.</translation>
+        <location filename="../qml/ContactImportPicker.qml" line="+34" />
+        <source>Choose a contact from</source>
+        <translation>Scegli un contatto da</translation>
     </message>
 </context>
 <context>
@@ -349,6 +311,14 @@
         <location line="+5" />
         <source>New message</source>
         <translation>Nuovo messaggio</translation>
+    </message>
+</context>
+<context>
+    <name>NumberChoiceDialog</name>
+    <message>
+        <location filename="../qml/NumberChoiceDialog.qml" line="+21" />
+        <source>Choose a number</source>
+        <translation>Scegli un numero</translation>
     </message>
 </context>
 <context>
@@ -478,7 +448,7 @@
 <context>
     <name>SettingsPage</name>
     <message>
-        <location filename="../qml/SettingsPage.qml" line="+15" />
+        <location filename="../qml/SettingsPage.qml" line="+16" />
         <source>Settings</source>
         <translation>Impostazioni</translation>
     </message>
@@ -498,12 +468,7 @@
         <translation>Cambia nome del profilo</translation>
     </message>
     <message>
-        <location line="+9" />
-        <source>Allow access to contacts</source>
-        <translation>Consenti l'accesso ai contatti</translation>
-    </message>
-    <message>
-        <location line="+14" />
+        <location line="+7" />
         <source>Notifications</source>
         <translation>Notifiche</translation>
     </message>
@@ -552,12 +517,12 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../qml/main.qml" line="+131" />
-        <source>Access to contacts is off. You can allow it in Settings.</source>
-        <translation>L'accesso ai contatti è disattivato. Puoi consentirlo nelle impostazioni.</translation>
+        <location filename="../qml/main.qml" line="+132" />
+        <source>This contact has no phone number.</source>
+        <translation>Questo contatto non ha un numero di telefono.</translation>
     </message>
     <message>
-        <location line="+20" />
+        <location line="+24" />
         <source>Signal asks for a captcha. Please solve it again.</source>
         <translation>Signal richiede un captcha. Risolvilo di nuovo.</translation>
     </message>
