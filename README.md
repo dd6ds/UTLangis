@@ -21,11 +21,17 @@ Names and numbers in the screenshots are placeholders.
 - Registration as primary device with captcha and SMS or voice-call code
 - Profile name
 - One-to-one and group chats: receive, send text and photos
+- Images open full screen with a tap; pinch or double-tap to zoom
+- Voice messages: record (🎤) and play, AAC like Signal's own apps
+- Delete messages (press and hold): for this phone, or for everyone within
+  24 hours of sending; deletions by others are applied too
 - New chats by phone number or picked from the address book (after asking
   for permission once; Signal contact discovery is only asked about the
   chosen number)
 - Conversation list with unread counts, notifications while the app runs
-- Light/dark appearance, English and German
+- Light/dark appearance
+- English, German, French, Spanish and Italian; follows the phone's language
+  or a language chosen in the settings
 
 Not (yet) included: calls, stories, reactions and replies (only their text
 is shown where they carry one), registration lock PIN, linking other devices
@@ -109,7 +115,8 @@ core/                 Rust backend (static library with a C interface)
   src/threads.rs      conversation list (threads.json)
   src/titles.rs       contact and group names
   src/files.rs        attachments on the phone
-src/                  C++: SignalClient (bridge), list models, notifications
+src/                  C++: SignalClient (bridge), list models, notifications,
+                      LanguageManager, VoiceNotes (GStreamer recording/playback)
 qml/                  pages and components
 i18n/                 translations
 ```
@@ -126,14 +133,14 @@ has to be registered again.
 
 All user-visible texts are marked with `qsTr()` (QML) or `tr()` (C++).
 After changing texts, refresh the `.ts` file with `lupdate` from the
-Clickable container and fill in the German texts:
+Clickable container and fill in the translations:
 
 ```bash
 docker run --rm -u $(id -u):$(id -g) -v "$PWD":/p -w /p \
   clickable/amd64-20.04-arm64:latest /usr/lib/qt5/bin/lupdate -no-obsolete \
   -locations relative src/*.cpp qml/*.qml \
-  -ts i18n/ubsignal_de.ts
-python3 i18n/translate_de.py   # fills German; lists any text still missing
+  -ts i18n/ubsignal_de.ts i18n/ubsignal_fr.ts i18n/ubsignal_es.ts i18n/ubsignal_it.ts
+python3 i18n/translate.py   # fills all languages; lists any text still missing
 ```
 
 ## Platform constraints
@@ -148,9 +155,11 @@ python3 i18n/translate_de.py   # fills German; lists any text still missing
 - **Permissions** (`ubsignal.apparmor`): `networking` for Signal's servers,
   `webview` for the captcha page, `content_exchange` to pick photos from
   other apps, `push-notification-client` for notifications, `contacts` for
-  the contact picker. The app reads the address book only after the user
-  allowed it in its own dialog (or in Settings). `contacts` is a reserved
-  policy group: sideloading works, the OpenStore would review it manually.
+  the contact picker, `audio` and `microphone` for voice messages (Ubuntu
+  Touch asks once before the microphone is used). The app reads the address
+  book only after the user allowed it in its own dialog (or in Settings).
+  `contacts` is a reserved policy group: sideloading works, the OpenStore
+  would review it manually.
 - **`QT_QUICK_CONTROLS_STYLE=Default` is set in `main.cpp`**, and pages use
   `AppLabel` / `AppField` so both light and dark theme stay readable.
 

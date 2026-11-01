@@ -1,21 +1,20 @@
-// Entry point: sets up translations and the QML engine, starts the Signal
-// backend (SignalClient) and exposes it and the phone's light/dark theme
-// (SystemTheme) to QML.
+// Entry point: sets up the QML engine, starts the Signal backend
+// (SignalClient) and exposes it, the UI language (LanguageManager), voice
+// messages (VoiceNotes) and the phone's light/dark theme (SystemTheme) to QML.
 
 #include <QDebug>
 #include <QDir>
 #include <QGuiApplication>
-#include <QLibraryInfo>
-#include <QLocale>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QStandardPaths>
-#include <QTranslator>
 #include <QtQml>
 #include <QtWebEngine>
 
+#include "languagemanager.h"
 #include "signalclient.h"
 #include "systemtheme.h"
+#include "voicenotes.h"
 
 // Confined click apps may only write below ~/.local/share/<package-name>
 // (and the matching cache/config dirs). The Signal database, the keys and
@@ -26,21 +25,6 @@ static QString dataDir()
             + QStringLiteral("/ubsignal");
     QDir().mkpath(dir);
     return dir;
-}
-
-// Follows the language selected on the phone. App texts are embedded as
-// :/i18n/ubsignal_<lang>.qm; English is the source language.
-static void installTranslators(QGuiApplication &app)
-{
-    const QLocale locale = QLocale::system();
-    auto *appTranslator = new QTranslator(&app);
-    if (appTranslator->load(locale, QStringLiteral("ubsignal"), QStringLiteral("_"),
-                            QStringLiteral(":/i18n")))
-        app.installTranslator(appTranslator);
-    auto *qtTranslator = new QTranslator(&app);
-    if (qtTranslator->load(locale, QStringLiteral("qtbase"), QStringLiteral("_"),
-                           QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
-        app.installTranslator(qtTranslator);
 }
 
 // Ubuntu Touch exports GRID_UNIT_PX (typically 18-27 on a phone, 8 on a
@@ -61,6 +45,14 @@ static SignalClient *exposeBackend(QQmlApplicationEngine &engine)
     qmlRegisterUncreatableType<MessageListModel>(
         "ubSignal", 1, 0, "MessageListModel", QStringLiteral("Provided by Signal.messages"));
     engine.rootContext()->setContextProperty(QStringLiteral("Signal"), client);
+    // Installs the translation before the first page is created.
+    engine.rootContext()->setContextProperty(QStringLiteral("Language"),
+                                             new LanguageManager(&engine, &engine));
+    // Recordings wait in the app's cache dir until the backend has sent them.
+    const QString recordDir = QStandardPaths::writableLocation(
+            QStandardPaths::GenericCacheLocation) + QStringLiteral("/ubsignal/voice");
+    engine.rootContext()->setContextProperty(QStringLiteral("Voice"),
+                                             new VoiceNotes(recordDir, &engine));
     engine.rootContext()->setContextProperty(QStringLiteral("SystemTheme"),
                                              new SystemTheme(&engine));
     engine.rootContext()->setContextProperty(QStringLiteral("gridUnitPx"), gridUnitPx());
@@ -79,7 +71,6 @@ int main(int argc, char *argv[])
     QtWebEngine::initialize();
     app.setApplicationName(QStringLiteral("ubSignal"));
     app.setOrganizationName(QStringLiteral("ubsignal"));
-    installTranslators(app);
 
     QQmlApplicationEngine engine;
     SignalClient *client = exposeBackend(engine);

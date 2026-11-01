@@ -16,4 +16,4 @@ In particular:
 - Keep files and functions small (CONTRIBUTING.md, section 3); split instead
   of growing them.
 - Build with `clickable build` to check a change. See the README for
-  translations (`lupdate` + `i18n/translate_de.py`) and Qt 5.12 limits.
+  translations (`lupdate` + `i18n/translate.py`) and Qt 5.12 limits.

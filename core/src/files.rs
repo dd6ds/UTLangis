@@ -12,6 +12,7 @@ use crate::events::StoredFile;
 use crate::titles::SignalManager;
 
 const FALLBACK_TYPE: &str = "application/octet-stream";
+const VOICE_TYPE: &str = "audio/aac";
 
 fn content_type_of(pointer: &AttachmentPointer) -> String {
     pointer.content_type.clone().unwrap_or_else(|| FALLBACK_TYPE.to_owned())
@@ -64,22 +65,29 @@ pub fn existing(dir: &Path, view: &MessageView) -> Vec<StoredFile> {
 }
 
 /// Reads the files to send. Files that cannot be read are reported in the
-/// returned error instead of being skipped silently.
-pub fn read_for_upload(paths: &[String]) -> Result<Vec<(AttachmentSpec, Vec<u8>)>, String> {
+/// returned error instead of being skipped silently. `voice` marks them as
+/// voice messages, which Signal apps show with a player.
+pub fn read_for_upload(
+    paths: &[String],
+    voice: bool,
+) -> Result<Vec<(AttachmentSpec, Vec<u8>)>, String> {
     paths
         .iter()
         .map(|path| {
             let data = std::fs::read(path).map_err(|e| format!("{path}: {e}"))?;
-            let content_type = mime_guess::from_path(path)
-                .first_raw()
-                .unwrap_or(FALLBACK_TYPE)
-                .to_owned();
+            // Voice messages are recorded as ADTS AAC (src/voicenotes.cpp),
+            // which Signal's apps expect as audio/aac.
+            let content_type = if voice {
+                VOICE_TYPE.to_owned()
+            } else {
+                mime_guess::from_path(path).first_raw().unwrap_or(FALLBACK_TYPE).to_owned()
+            };
             let spec = AttachmentSpec {
                 content_type,
                 length: data.len(),
                 file_name: Path::new(path).file_name().map(|n| n.to_string_lossy().into_owned()),
                 preview: None,
-                voice_note: None,
+                voice_note: voice.then_some(true),
                 borderless: None,
                 width: None,
                 height: None,
@@ -103,4 +111,19 @@ pub fn keep_sent(dir: &Path, ts: u64, copies: &[(String, Vec<u8>)]) -> Vec<Store
             Some(stored_file(&path, content_type.clone()))
         })
         .collect()
+}
+
+/// Removes the stored attachments of the message sent at `ts`.
+pub fn remove(dir: &Path, ts: u64) {
+    let prefix = format!("{ts}_");
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    for entry in entries.flatten() {
+        if entry.file_name().to_string_lossy().starts_with(&prefix) {
+            if let Err(error) = std::fs::remove_file(entry.path()) {
+                tracing::warn!(%error, "could not remove attachment");
+            }
+        }
+    }
 }

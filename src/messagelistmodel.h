@@ -32,6 +32,8 @@ public:
 
     void reset(const QJsonArray &messages);
     void append(const QJsonObject &message);
+    // Removes the message sent at `ts` (Signal's message id), if shown.
+    void remove(qint64 ts);
     void clear();
 
 private:

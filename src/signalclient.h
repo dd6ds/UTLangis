@@ -44,7 +44,12 @@ public:
     Q_INVOKABLE void openThread(const QString &thread);
     Q_INVOKABLE void closeThread();
     Q_INVOKABLE void sendMessage(const QString &text, const QStringList &attachmentUrls);
+    // Sends a recording from VoiceNotes as a voice message.
+    Q_INVOKABLE void sendVoiceNote(const QString &url);
     // name: from the address book, "" for a typed number.
+    // Deletes a message of the open chat (ts = its sent time); `everyone`
+    // also asks the other side(s) to delete it.
+    Q_INVOKABLE void deleteMessage(qint64 ts, bool everyone);
     Q_INVOKABLE void startChat(const QString &phone, const QString &name);
     // Called when the app comes back from being suspended.
     void reconnect();

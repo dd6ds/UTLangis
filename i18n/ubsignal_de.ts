@@ -32,6 +32,19 @@
     </message>
 </context>
 <context>
+    <name>AttachmentView</name>
+    <message>
+        <location filename="../qml/AttachmentView.qml" line="+54" />
+        <source>Stop</source>
+        <translation>Stopp</translation>
+    </message>
+    <message>
+        <location line="+0" />
+        <source>Play voice message</source>
+        <translation>Sprachnachricht abspielen</translation>
+    </message>
+</context>
+<context>
     <name>CaptchaPage</name>
     <message>
         <location filename="../qml/CaptchaPage.qml" line="+26" />
@@ -52,19 +65,24 @@
 <context>
     <name>ChatPage</name>
     <message>
-        <location filename="../qml/ChatPage.qml" line="+17" />
+        <location filename="../qml/ChatPage.qml" line="+18" />
         <source>Unknown contact</source>
         <translation>Unbekannter Kontakt</translation>
     </message>
     <message>
-        <location line="+53" />
+        <location line="+61" />
         <source>Remove photo</source>
         <translation>Foto entfernen</translation>
     </message>
     <message>
-        <location line="+13" />
+        <location line="+14" />
         <source>Attach photo</source>
         <translation>Foto anhängen</translation>
+    </message>
+    <message>
+        <location line="+7" />
+        <source>Record voice message</source>
+        <translation>Sprachnachricht aufnehmen</translation>
     </message>
     <message>
         <location line="+6" />
@@ -73,8 +91,24 @@
     </message>
     <message>
         <location line="+6" />
+        <location line="+29" />
         <source>Send</source>
         <translation>Senden</translation>
+    </message>
+    <message>
+        <location line="-14" />
+        <source>Discard recording</source>
+        <translation>Aufnahme verwerfen</translation>
+    </message>
+    <message>
+        <location line="+11" />
+        <source>Recording %1</source>
+        <translation>Aufnahme %1</translation>
+    </message>
+    <message>
+        <location line="+9" />
+        <source>Recording too short</source>
+        <translation>Aufnahme zu kurz</translation>
     </message>
 </context>
 <context>
@@ -113,12 +147,12 @@
         <translation>Kontakte</translation>
     </message>
     <message>
-        <location line="+40" />
+        <location line="+48" />
         <source>Search</source>
         <translation>Suchen</translation>
     </message>
     <message>
-        <location line="+28" />
+        <location line="+54" />
         <source>No contacts found.</source>
         <translation>Keine Kontakte gefunden.</translation>
     </message>
@@ -152,11 +186,55 @@
     </message>
 </context>
 <context>
+    <name>DeleteMessageDialog</name>
+    <message>
+        <location filename="../qml/DeleteMessageDialog.qml" line="+29" />
+        <source>Delete message?</source>
+        <translation>Nachricht löschen?</translation>
+    </message>
+    <message>
+        <location line="+8" />
+        <source>Delete for me</source>
+        <translation>Für mich löschen</translation>
+    </message>
+    <message>
+        <location line="+10" />
+        <source>Delete for everyone</source>
+        <translation>Für alle löschen</translation>
+    </message>
+    <message>
+        <location line="+10" />
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+</context>
+<context>
+    <name>ImageViewerPage</name>
+    <message>
+        <location filename="../qml/ImageViewerPage.qml" line="+88" />
+        <source>Close</source>
+        <translation>Schließen</translation>
+    </message>
+</context>
+<context>
     <name>ImportPicker</name>
     <message>
         <location filename="../qml/ImportPicker.qml" line="+33" />
         <source>Send a photo from</source>
         <translation>Foto senden aus</translation>
+    </message>
+</context>
+<context>
+    <name>LanguageChoice</name>
+    <message>
+        <location filename="../qml/LanguageChoice.qml" line="+14" />
+        <source>Language</source>
+        <translation>Sprache</translation>
+    </message>
+    <message>
+        <location line="+6" />
+        <source>Like the phone</source>
+        <translation>Wie das Telefon</translation>
     </message>
 </context>
 <context>
@@ -261,7 +339,7 @@
         <translation>Bestätigungscode</translation>
     </message>
     <message>
-        <location line="+9" />
+        <location line="+10" />
         <source>Confirm</source>
         <translation>Bestätigen</translation>
     </message>
@@ -299,7 +377,7 @@
         <translation>Zugriff auf Kontakte erlauben</translation>
     </message>
     <message>
-        <location line="+21" />
+        <location line="+26" />
         <source>Ubuntu Touch pauses apps in the background, so new messages arrive when ubSignal is open. To be notified while it is in the background, prevent app suspension for ubSignal (e.g. with UT Tweak Tool).</source>
         <translation>Ubuntu Touch pausiert Apps im Hintergrund, daher kommen neue Nachrichten an, wenn ubSignal geöffnet ist. Um auch im Hintergrund benachrichtigt zu werden, verhindere das Pausieren für ubSignal (z. B. mit dem UT Tweak Tool).</translation>
     </message>
@@ -323,12 +401,12 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../qml/main.qml" line="+114" />
+        <location filename="../qml/main.qml" line="+129" />
         <source>Access to contacts is off. You can allow it in Settings.</source>
         <translation>Der Zugriff auf Kontakte ist aus. Du kannst ihn in den Einstellungen erlauben.</translation>
     </message>
     <message>
-        <location line="+16" />
+        <location line="+20" />
         <source>Signal asks for a captcha. Please solve it again.</source>
         <translation>Signal verlangt ein Captcha. Bitte löse es noch einmal.</translation>
     </message>
@@ -356,6 +434,11 @@
         <location line="+12" />
         <source>Profile name saved</source>
         <translation>Profilname gespeichert</translation>
+    </message>
+    <message>
+        <location line="+9" />
+        <source>Audio could not be recorded or played: %1</source>
+        <translation>Audio konnte nicht aufgenommen oder abgespielt werden: %1</translation>
     </message>
 </context>
 </TS>

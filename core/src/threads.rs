@@ -91,6 +91,16 @@ impl ThreadIndex {
         self.save();
     }
 
+    /// Clears the preview if it shows the deleted message with timestamp `ts`.
+    pub fn forget_preview(&mut self, key: &str, ts: u64) {
+        if let Some(entry) = self.threads.get_mut(key) {
+            if entry.last_ts == ts && !entry.last_text.is_empty() {
+                entry.last_text.clear();
+                self.save();
+            }
+        }
+    }
+
     pub fn mark_read(&mut self, key: &str) {
         if let Some(entry) = self.threads.get_mut(key) {
             if entry.unread > 0 {

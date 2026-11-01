@@ -92,7 +92,7 @@ These are explained in the README ("Platform constraints"); the short form:
 - Every user-visible text is wrapped in `qsTr()` / `tr()`, with placeholders
   (`qsTr("Open %1").arg(name)`) instead of joined fragments.
 - After changing texts, refresh the `.ts` file and the German translation as
-  described in the README ("Translations"). `translate_de.py` must report
+  described in the README ("Translations"). `translate.py` must report
   "all texts translated".
 
 ## 9. Before you commit

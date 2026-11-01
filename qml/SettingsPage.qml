@@ -2,8 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-// Settings: the registered number, the profile name and the light/dark
-// appearance, plus a note on running in the background.
+// Settings: the registered number, the profile name, contacts access, the
+// language and the light/dark appearance, plus a note on running in the background.
 Page {
     id: page
     property var app
@@ -54,6 +54,11 @@ Page {
                     wrapMode: Text.Wrap
                     verticalAlignment: Text.AlignVCenter
                 }
+            }
+
+            LanguageChoice {
+                Layout.fillWidth: true
+                app: page.app
             }
 
             AppearanceChoice {

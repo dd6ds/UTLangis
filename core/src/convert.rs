@@ -34,6 +34,14 @@ pub fn view(content: &Content, own: &ServiceId) -> Option<MessageView> {
     })
 }
 
+/// The message a "delete for everyone" request removes: its thread and sent
+/// timestamp. presage has already blanked that message in the store.
+pub fn deletion(content: &Content) -> Option<(Thread, u64)> {
+    let (data, _) = data_message(&content.body)?;
+    let ts = data.delete.as_ref()?.target_sent_timestamp?;
+    Some((Thread::try_from(content).ok()?, ts))
+}
+
 fn data_message(body: &ContentBody) -> Option<(&DataMessage, bool)> {
     match body {
         ContentBody::DataMessage(data) => Some((data, false)),

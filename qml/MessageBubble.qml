@@ -4,10 +4,14 @@ import QtQuick.Layouts 1.12
 
 // One message: own messages on the right, others on the left with the
 // sender's name in groups. Images are shown inline, other attachments as
-// their file name. Uses the roles of MessageListModel.
+// their file name. Press and hold offers to delete it. Uses the roles of
+// MessageListModel.
 Item {
     id: bubble
     property var app
+
+    // Press and hold on the bubble.
+    signal deleteRequested()
 
     readonly property real maxBubbleWidth: width * 0.8
     readonly property color textColor: outgoing ? app.colorBubbleOwnText : app.colorText
@@ -24,6 +28,11 @@ Item {
         height: content.implicitHeight + 1.4 * bubble.app.gu
         radius: bubble.app.gu * 1.2
         color: outgoing ? bubble.app.colorBubbleOwn : bubble.app.colorBubbleOther
+
+        MouseArea {
+            anchors.fill: parent
+            onPressAndHold: bubble.deleteRequested()
+        }
 
         ColumnLayout {
             id: content
@@ -48,6 +57,7 @@ Item {
                     path: modelData.path
                     contentType: modelData.type
                     textColor: bubble.textColor
+                    onPressAndHeld: bubble.deleteRequested()
                 }
             }
 

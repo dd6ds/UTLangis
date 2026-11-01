@@ -19,7 +19,7 @@ ARG CLICK_PATH="/home/developer/ubtouch/ubSignal/build/aarch64-linux-gnu/app/ins
 ARG CLICK_QML2_IMPORT_PATH="/home/developer/ubtouch/ubSignal/build/aarch64-linux-gnu/app/install/lib/aarch64-linux-gnu"
 ENV RUSTUP_HOME="/opt/rust/rustup" CARGO_HOME="/opt/rust/cargo" PATH="/opt/rust/cargo/bin:/opt/cmake/bin:/opt/protoc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
-RUN apt-get update && apt-get install -y --force-yes --no-install-recommends qtdeclarative5-dev:arm64 qtwebengine5-dev:arm64 && apt-get clean
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends qtdeclarative5-dev:arm64 qtwebengine5-dev:arm64 libgstreamer1.0-dev:arm64 && apt-get clean
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip clang libclang-dev
 RUN mkdir -p /opt/cmake && curl -sSfL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz | tar xz -C /opt/cmake --strip-components=1
 RUN curl -sSfL -o /tmp/protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip && unzip -q /tmp/protoc.zip -d /opt/protoc && rm /tmp/protoc.zip

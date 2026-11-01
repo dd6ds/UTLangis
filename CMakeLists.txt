@@ -18,6 +18,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # WebEngine: the registration captcha (qml/CaptchaPage.qml).
 find_package(Qt5 COMPONENTS Core Gui Qml Quick DBus WebEngine REQUIRED)
 
+# GStreamer: recording and playing voice messages (src/voicenotes.cpp).
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GSTREAMER REQUIRED IMPORTED_TARGET gstreamer-1.0)
+
 # ---------------------------------------------------------------------------
 # Rust backend (core/): built by cargo as a static library for the target the
 # C++ compiler builds for. clickable's container provides the toolchain, see
@@ -93,6 +97,8 @@ file(WRITE ${UBSIGNAL_I18N_QRC}
 add_custom_target(ubsignal_translations DEPENDS ${UBSIGNAL_QM_FILES})
 
 add_executable(ubsignal
+    src/languagemanager.cpp
+    src/languagemanager.h
     src/main.cpp
     src/messagelistmodel.cpp
     src/messagelistmodel.h
@@ -104,6 +110,8 @@ add_executable(ubsignal
     src/systemtheme.h
     src/threadlistmodel.cpp
     src/threadlistmodel.h
+    src/voicenotes.cpp
+    src/voicenotes.h
     qml.qrc
     ${UBSIGNAL_I18N_QRC})
 add_dependencies(ubsignal ubsignal_translations ubsignal_core)
@@ -115,7 +123,7 @@ target_include_directories(ubsignal PRIVATE
 # The Rust static library needs pthread, dl and libm from the system, and
 # libstdc++ for the C++ parts of BoringSSL (already linked for Qt).
 target_link_libraries(ubsignal
-    Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick Qt5::DBus Qt5::WebEngine
+    Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick Qt5::DBus Qt5::WebEngine PkgConfig::GSTREAMER
     ${RUST_CORE_LIB} pthread dl m)
 
 install(TARGETS ubsignal RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

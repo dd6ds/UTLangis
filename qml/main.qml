@@ -94,6 +94,13 @@ ApplicationWindow {
         return Qt.formatDateTime(d, d.getTime() < today.getTime() ? "dd.MM. hh:mm" : "hh:mm")
     }
 
+    // "m:ss" for a length in milliseconds (voice messages).
+    function durationText(ms) {
+        var seconds = Math.floor(ms / 1000)
+        var rest = seconds % 60
+        return Math.floor(seconds / 60) + ":" + (rest < 10 ? "0" : "") + rest
+    }
+
     // --- Navigation --------------------------------------------------------
     readonly property bool registered: Signal.state === "offline" || Signal.state === "online"
 
@@ -120,6 +127,10 @@ ApplicationWindow {
             contactsConsent.open()
         else
             showNote(qsTr("Access to contacts is off. You can allow it in Settings."))
+    }
+
+    function openImage(path) {
+        stack.push(Qt.resolvedUrl("ImageViewerPage.qml"), { app: rootWindow, path: path })
     }
 
     function openSettings() {
@@ -160,6 +171,12 @@ ApplicationWindow {
             if (rootWindow.pageErrorActions.indexOf(action) < 0)
                 rootWindow.showNote(rootWindow.errorText(kind, message))
         }
+    }
+
+    Connections {
+        target: Voice
+        onFailed: rootWindow.showNote(qsTr("Audio could not be recorded or played: %1")
+                                      .arg(message))
     }
 
     StackView {

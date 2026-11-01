@@ -61,6 +61,9 @@ async fn on_content(
     content: &Content,
     own: &ServiceId,
 ) {
+    if let Some((thread, ts)) = convert::deletion(content) {
+        return crate::commands::forget_message(shared, &thread_key(&thread), ts);
+    }
     let Some(view) = convert::view(content, own) else {
         return;
     };

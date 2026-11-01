@@ -63,6 +63,18 @@ void MessageListModel::append(const QJsonObject &message)
     endInsertRows();
 }
 
+void MessageListModel::remove(qint64 ts)
+{
+    for (int row = 0; row < m_entries.size(); ++row) {
+        if (m_entries.at(row).ts == ts) {
+            beginRemoveRows(QModelIndex(), row, row);
+            m_entries.removeAt(row);
+            endRemoveRows();
+            return;
+        }
+    }
+}
+
 void MessageListModel::clear()
 {
     beginResetModel();

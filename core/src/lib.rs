@@ -6,13 +6,14 @@
 //! - `setProfile` {name}: set the profile name others see
 //! - `threads`: list the conversations
 //! - `history` {thread}: the stored messages of one conversation
-//! - `send` {thread, text, attachments: [paths]}
+//! - `send` {thread, text, attachments: [paths], voice}
 //! - `resolve` {phone}: find the Signal account of a phone number
 //! - `markRead` {thread}
+//! - `deleteMessage` {thread, ts, everyone}: delete for this phone, or for all
 //! - `reconnect`: reopen the message connection (after the app was suspended)
 //!
 //! Events (JSON objects with an "ev" field): `state`, `error`, `threads`,
-//! `history`, `message`, `sent`, `resolved`. Their fields are built in
+//! `history`, `message`, `sent`, `resolved`, `deleted` {thread, ts}. Their fields are built in
 //! worker.rs and events.rs.
 
 mod commands;

@@ -2,8 +2,9 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-// One conversation: the messages (Signal.messages) and the input row with a
-// photo button. A picked photo is shown above the input until it is sent.
+// One conversation: the messages (Signal.messages) and the input row with
+// photo and voice message buttons. A picked photo is shown above the input
+// until it is sent.
 Page {
     id: page
     property var app
@@ -27,7 +28,11 @@ Page {
         pendingPhoto = ""
     }
 
-    StackView.onRemoved: Signal.closeThread()
+    StackView.onRemoved: {
+        Voice.cancelRecording()
+        Voice.stopPlaying()
+        Signal.closeThread()
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -45,6 +50,7 @@ Page {
             delegate: MessageBubble {
                 width: messageList.width
                 app: page.app
+                onDeleteRequested: deleteDialog.openFor(ts, outgoing)
             }
             onCountChanged: positionViewAtEnd()
             // The list gets shorter when the keyboard opens; keep the newest
@@ -79,12 +85,20 @@ Page {
             Layout.fillWidth: true
             Layout.margins: page.app.gu
             spacing: page.app.gu
+            visible: !Voice.recording
 
             ToolButton {
                 text: "📎"
                 font.pixelSize: page.app.fontTitle
                 Accessible.name: qsTr("Attach photo")
                 onClicked: importPicker.open()
+            }
+            ToolButton {
+                text: "🎤"
+                font.pixelSize: page.app.fontTitle
+                enabled: !Signal.busy
+                Accessible.name: qsTr("Record voice message")
+                onClicked: Voice.startRecording()
             }
             AppField {
                 id: messageField
@@ -99,6 +113,46 @@ Page {
                 onClicked: page.send()
             }
         }
+
+        // Shown instead of the input row while a voice message is recorded.
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.margins: page.app.gu
+            spacing: page.app.gu
+            visible: Voice.recording
+
+            ToolButton {
+                text: "✕"
+                font.pixelSize: page.app.fontTitle
+                Accessible.name: qsTr("Discard recording")
+                onClicked: Voice.cancelRecording()
+            }
+            Rectangle {
+                implicitWidth: page.app.gu
+                implicitHeight: implicitWidth
+                radius: width / 2
+                color: page.app.colorError
+            }
+            AppLabel {
+                Layout.fillWidth: true
+                text: qsTr("Recording %1").arg(page.app.durationText(Voice.recordedMs))
+            }
+            Button {
+                text: qsTr("Send")
+                onClicked: {
+                    var url = Voice.stopRecording()
+                    if (url.length)
+                        Signal.sendVoiceNote(url)
+                    else
+                        page.app.showNote(qsTr("Recording too short"))
+                }
+            }
+        }
+    }
+
+    DeleteMessageDialog {
+        id: deleteDialog
+        app: page.app
     }
 
     ImportPicker {

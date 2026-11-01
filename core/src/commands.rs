@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use presage::libsignal_service::content::DataMessage;
+use presage::proto::data_message::Delete;
 use presage::libsignal_service::prelude::phonenumber::{self, PhoneNumber};
 use presage::libsignal_service::profile_name::ProfileName;
 use presage::libsignal_service::protocol::ServiceId;
@@ -46,6 +47,9 @@ pub enum Command {
         text: String,
         #[serde(default)]
         attachments: Vec<String>,
+        /// The attachment is a recorded voice message.
+        #[serde(default)]
+        voice: bool,
     },
     Resolve {
         phone: String,
@@ -56,6 +60,13 @@ pub enum Command {
     MarkRead {
         thread: String,
     },
+    /// `everyone`: also ask the other side(s) to delete it (own messages only).
+    DeleteMessage {
+        thread: String,
+        ts: u64,
+        #[serde(default)]
+        everyone: bool,
+    },
     Reconnect,
 }
 
@@ -63,10 +74,13 @@ pub async fn run(manager: &mut SignalManager, shared: &Shared, command: Command)
     match command {
         Command::SetProfile { name } => set_profile(manager, shared, name).await,
         Command::History { thread } => history(manager, shared, &thread).await,
-        Command::Send { thread, text, attachments } => {
-            send(manager, shared, &thread, text, &attachments).await
+        Command::Send { thread, text, attachments, voice } => {
+            send(manager, shared, &thread, text, &attachments, voice).await
         }
         Command::Resolve { phone, name } => resolve(manager, shared, &phone, &name).await,
+        Command::DeleteMessage { thread, ts, everyone } => {
+            delete_message(manager, shared, &thread, ts, everyone).await
+        }
         // Handled by the worker before getting here.
         Command::Register { .. }
         | Command::Confirm { .. }
@@ -127,6 +141,7 @@ async fn send(
     key: &str,
     text: String,
     paths: &[String],
+    voice: bool,
 ) {
     let fail = |message: String| {
         shared.sink.emit(json!({ "ev": "error", "action": "send", "kind": "other",
@@ -135,7 +150,7 @@ async fn send(
     let Some(thread) = parse_thread_key(key) else {
         return fail("invalid conversation".into());
     };
-    let uploads = match files::read_for_upload(paths) {
+    let uploads = match files::read_for_upload(paths, voice) {
         Ok(uploads) => uploads,
         Err(error) => return fail(error),
     };
@@ -208,5 +223,50 @@ async fn resolve(manager: &mut SignalManager, shared: &Shared, phone: &str, name
     }
     shared.index.borrow_mut().ensure(&key, &title);
     shared.sink.emit(json!({ "ev": "resolved", "thread": key, "title": title }));
+    shared.sink.emit(threads_event(shared));
+}
+
+/// Deletes a message from this phone; with `everyone`, first sends Signal's
+/// delete request to the conversation, which also blanks the stored copy.
+async fn delete_message(
+    manager: &mut SignalManager,
+    shared: &Shared,
+    key: &str,
+    ts: u64,
+    everyone: bool,
+) {
+    let Some(thread) = parse_thread_key(key) else {
+        return shared.sink.error("deleteMessage", "invalid conversation");
+    };
+    if everyone {
+        let now = now_millis();
+        let request = DataMessage {
+            delete: Some(Delete { target_sent_timestamp: Some(ts) }),
+            timestamp: Some(now),
+            ..Default::default()
+        };
+        let result = match &thread {
+            Thread::Contact(id) => manager.send_message(*id, request, now).await,
+            Thread::Group(master_key) => {
+                manager.send_message_to_group(master_key, request, now).await
+            }
+        };
+        if let Err(error) = result {
+            return shared.sink.error("deleteMessage", error);
+        }
+    }
+    let mut store = manager.store().clone();
+    if let Err(error) = store.delete_message(&thread, ts).await {
+        return shared.sink.error("deleteMessage", error);
+    }
+    files::remove(&shared.attachments_dir, ts);
+    forget_message(shared, key, ts);
+}
+
+/// Removes a deleted message from the app: the open chat and the preview in
+/// the conversation list.
+pub fn forget_message(shared: &Shared, key: &str, ts: u64) {
+    shared.index.borrow_mut().forget_preview(key, ts);
+    shared.sink.emit(json!({ "ev": "deleted", "thread": key, "ts": ts }));
     shared.sink.emit(threads_event(shared));
 }

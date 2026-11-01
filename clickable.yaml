@@ -13,10 +13,12 @@ framework: ubuntu-sdk-20.04
 # vetting); sideloaded packages work fine with it.
 ignore_review_errors: true
 
-# QtWebEngine shows Signal's registration captcha (CaptchaPage.qml).
+# QtWebEngine shows Signal's registration captcha (CaptchaPage.qml);
+# GStreamer records and plays voice messages (src/voicenotes.cpp).
 dependencies_target:
   - qtdeclarative5-dev
   - qtwebengine5-dev
+  - libgstreamer1.0-dev
 
 # The Signal backend (core/) is Rust. The SDK image has no Rust toolchain, so
 # clickable adds one to its derived image once: rustup for the arm64 target,

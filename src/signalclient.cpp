@@ -104,6 +104,24 @@ void SignalClient::sendMessage(const QString &text, const QStringList &attachmen
              {QStringLiteral("attachments"), paths}});
 }
 
+void SignalClient::deleteMessage(qint64 ts, bool everyone)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("deleteMessage")},
+             {QStringLiteral("thread"), m_currentThread},
+             {QStringLiteral("ts"), ts},
+             {QStringLiteral("everyone"), everyone}});
+}
+
+void SignalClient::sendVoiceNote(const QString &url)
+{
+    setBusy(true);
+    command({{QStringLiteral("cmd"), QStringLiteral("send")},
+             {QStringLiteral("thread"), m_currentThread},
+             {QStringLiteral("text"), QString()},
+             {QStringLiteral("attachments"), QJsonArray{QUrl(url).toLocalFile()}},
+             {QStringLiteral("voice"), true}});
+}
+
 void SignalClient::startChat(const QString &phone, const QString &name)
 {
     qDebug() << "SignalClient: looking up a number for a new chat";
@@ -148,6 +166,9 @@ void SignalClient::onEvent(const QByteArray &json)
         setBusy(false);
         if (thread == m_currentThread)
             m_messages.append(event);
+    } else if (name == QLatin1String("deleted")) {
+        if (thread == m_currentThread)
+            m_messages.remove(static_cast<qint64>(event.value(QStringLiteral("ts")).toDouble()));
     } else if (name == QLatin1String("resolved")) {
         setBusy(false);
         emit chatStarted(thread);
