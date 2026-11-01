@@ -18,6 +18,13 @@ QVariant MessageListModel::data(const QModelIndex &index, int role) const
     case SenderNameRole: return entry.senderName;
     case TsRole: return entry.ts;
     case AttachmentsRole: return entry.attachments;
+    case SenderRole: return entry.sender;
+    case HasQuoteRole: return entry.hasQuote;
+    case QuoteTextRole: return entry.quoteText;
+    case QuoteAuthorRole: return entry.quoteAuthor;
+    case QuoteOwnRole: return entry.quoteOwn;
+    case StatusRole: return entry.status;
+    case ReactionsRole: return entry.reactions;
     default: return {};
     }
 }
@@ -28,7 +35,14 @@ QHash<int, QByteArray> MessageListModel::roleNames() const
             {TextRole, "text"},
             {SenderNameRole, "senderName"},
             {TsRole, "ts"},
-            {AttachmentsRole, "attachments"}};
+            {AttachmentsRole, "attachments"},
+            {SenderRole, "sender"},
+            {HasQuoteRole, "hasQuote"},
+            {QuoteTextRole, "quoteText"},
+            {QuoteAuthorRole, "quoteAuthor"},
+            {QuoteOwnRole, "quoteOwn"},
+            {StatusRole, "status"},
+            {ReactionsRole, "reactions"}};
 }
 
 MessageListModel::Entry MessageListModel::fromJson(const QJsonObject &message)
@@ -37,7 +51,14 @@ MessageListModel::Entry MessageListModel::fromJson(const QJsonObject &message)
             message.value(QStringLiteral("text")).toString(),
             message.value(QStringLiteral("senderName")).toString(),
             static_cast<qint64>(message.value(QStringLiteral("ts")).toDouble()),
-            message.value(QStringLiteral("attachments")).toArray().toVariantList()};
+            message.value(QStringLiteral("attachments")).toArray().toVariantList(),
+            message.value(QStringLiteral("sender")).toString(),
+            message.value(QStringLiteral("hasQuote")).toBool(),
+            message.value(QStringLiteral("quoteText")).toString(),
+            message.value(QStringLiteral("quoteAuthor")).toString(),
+            message.value(QStringLiteral("quoteOwn")).toBool(),
+            message.value(QStringLiteral("status")).toInt(),
+            message.value(QStringLiteral("reactions")).toObject().toVariantMap()};
 }
 
 void MessageListModel::reset(const QJsonArray &messages)
@@ -72,6 +93,38 @@ void MessageListModel::remove(qint64 ts)
             endRemoveRows();
             return;
         }
+    }
+}
+
+void MessageListModel::setStatus(const QJsonArray &timestamps, int status)
+{
+    for (const QJsonValue &value : timestamps) {
+        const qint64 ts = static_cast<qint64>(value.toDouble());
+        for (int row = 0; row < m_entries.size(); ++row) {
+            Entry &entry = m_entries[row];
+            if (entry.ts == ts && entry.outgoing && entry.status < status) {
+                entry.status = status;
+                const QModelIndex changed = index(row);
+                emit dataChanged(changed, changed, {StatusRole});
+            }
+        }
+    }
+}
+
+void MessageListModel::setReaction(qint64 target, const QString &reactor,
+                                   const QString &emoji, bool remove)
+{
+    for (int row = 0; row < m_entries.size(); ++row) {
+        Entry &entry = m_entries[row];
+        if (entry.ts != target)
+            continue;
+        if (remove)
+            entry.reactions.remove(reactor);
+        else
+            entry.reactions.insert(reactor, emoji);
+        const QModelIndex changed = index(row);
+        emit dataChanged(changed, changed, {ReactionsRole});
+        return;
     }
 }
 

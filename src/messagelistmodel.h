@@ -22,6 +22,17 @@ public:
         TsRole,
         // List of {path, type} maps.
         AttachmentsRole,
+        // Author's service id ("" for own messages), for replies.
+        SenderRole,
+        // The message replies to another one, shown as a quote above it.
+        HasQuoteRole,
+        QuoteTextRole,
+        QuoteAuthorRole,
+        QuoteOwnRole,
+        // Own messages: 0 unknown, 1 sent, 2 delivered, 3 read.
+        StatusRole,
+        // Reactions as { reactor: emoji }; "me" is our own.
+        ReactionsRole,
     };
 
     using QAbstractListModel::QAbstractListModel;
@@ -34,6 +45,10 @@ public:
     void append(const QJsonObject &message);
     // Removes the message sent at `ts` (Signal's message id), if shown.
     void remove(qint64 ts);
+    // Raises the delivery state of the own messages sent at `timestamps`.
+    void setStatus(const QJsonArray &timestamps, int status);
+    // Sets or (remove) clears one person's reaction to the message `target`.
+    void setReaction(qint64 target, const QString &reactor, const QString &emoji, bool remove);
     void clear();
 
 private:
@@ -43,6 +58,13 @@ private:
         QString senderName;
         qint64 ts = 0;
         QVariantList attachments;
+        QString sender;
+        bool hasQuote = false;
+        QString quoteText;
+        QString quoteAuthor;
+        bool quoteOwn = false;
+        int status = 0;
+        QVariantMap reactions;
     };
     static Entry fromJson(const QJsonObject &message);
 

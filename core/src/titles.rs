@@ -1,6 +1,8 @@
 //! Display names for conversations. A primary device has no synced address
 //! book, so contact names come from the Signal profiles people publish.
 
+use std::collections::HashMap;
+
 use presage::libsignal_service::profile_name::ProfileName;
 use presage::libsignal_service::protocol::ServiceId;
 use presage::manager::Registered;
@@ -41,6 +43,21 @@ pub async fn contact_name(manager: &mut SignalManager, id: &ServiceId) -> String
             String::new()
         }
     }
+}
+
+/// contact_name with a cache, for many messages from the same people.
+pub async fn cached_name(
+    manager: &mut SignalManager,
+    id: &ServiceId,
+    cache: &mut HashMap<String, String>,
+) -> String {
+    let key = id.service_id_string();
+    if let Some(name) = cache.get(&key) {
+        return name.clone();
+    }
+    let name = contact_name(manager, id).await;
+    cache.insert(key, name.clone());
+    name
 }
 
 fn full_name(name: &ProfileName<String>) -> String {

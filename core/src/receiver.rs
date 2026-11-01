@@ -5,14 +5,19 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use futures::{pin_mut, StreamExt};
-use presage::libsignal_service::content::Content;
+use presage::libsignal_service::content::{Content, ContentBody};
 use presage::libsignal_service::protocol::ServiceId;
 use presage::model::messages::Received;
+use presage::proto::receipt_message::Type as ReceiptType;
+use presage::proto::ReceiptMessage;
 
+use crate::commands;
 use crate::convert;
+use crate::receipts;
 use crate::events::{message_json, State};
 use crate::files;
 use crate::threads::thread_key;
+use presage::store::Thread;
 use crate::titles::{self, SignalManager};
 use crate::worker::Shared;
 
@@ -61,6 +66,20 @@ async fn on_content(
     content: &Content,
     own: &ServiceId,
 ) {
+    // A reply that proves the sender owns the phone number identity we
+    // wrote to: join the two chats before showing anything.
+    if let Some(pni) = content.metadata.pni_verified {
+        let pni = ServiceId::from(pni);
+        if shared.index.borrow().is_open_chat(&thread_key(&Thread::Contact(pni))) {
+            commands::merge_pni_thread(manager, shared, pni, content.metadata.sender).await;
+        }
+    }
+    if let ContentBody::ReceiptMessage(receipt) = &content.body {
+        return on_receipt(shared, receipt);
+    }
+    if let Some(reaction) = convert::reaction(content, own) {
+        return shared.sink.emit(reaction_event(&reaction));
+    }
     if let Some((thread, ts)) = convert::deletion(content) {
         return crate::commands::forget_message(shared, &thread_key(&thread), ts);
     }
@@ -78,9 +97,40 @@ async fn on_content(
     let preview = if view.text.is_empty() { ATTACHMENT_PREVIEW } else { &view.text };
     shared.index.borrow_mut().record(&key, &title, preview, view.ts, !view.outgoing);
 
-    let mut event = message_json(&view, &key, &sender_name, &stored);
+    let quote_name = match view.quote.as_ref().and_then(|q| q.author.filter(|_| !q.own)) {
+        Some(author) => titles::contact_name(manager, &author).await,
+        None => String::new(),
+    };
+    let mut event = message_json(&view, &key, &sender_name, &quote_name, &stored);
     event["ev"] = "message".into();
     event["title"] = shared.index.borrow().title(&key).unwrap_or_default().into();
     shared.sink.emit(event);
     shared.sink.emit(crate::worker::threads_event(shared));
+
+    if !view.outgoing {
+        shared.unread.borrow_mut().entry(key).or_default().push((view.sender, view.ts));
+        // The sender's app shows two ticks once a device of ours has it.
+        let delivered = vec![(view.sender, view.ts)];
+        commands::send_receipts(manager, delivered, ReceiptType::Delivery).await;
+    }
+}
+
+/// A recipient's device got or showed some of our messages.
+fn on_receipt(shared: &Shared, receipt: &ReceiptMessage) {
+    let status = receipts::status_of(receipt.r#type);
+    let changed: Vec<u64> = receipt
+        .timestamp
+        .iter()
+        .copied()
+        .filter(|ts| shared.receipts.borrow_mut().raise(*ts, status))
+        .collect();
+    if !changed.is_empty() {
+        shared.sink.emit(serde_json::json!({ "ev": "receipt", "ts": changed, "status": status }));
+    }
+}
+
+pub fn reaction_event(reaction: &convert::ReactionView) -> serde_json::Value {
+    serde_json::json!({ "ev": "reaction", "thread": thread_key(&reaction.thread),
+                        "target": reaction.target, "reactor": reaction.reactor,
+                        "emoji": reaction.emoji, "remove": reaction.remove })
 }

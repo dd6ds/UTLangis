@@ -2,9 +2,11 @@
 
 <img src="ubsignal.png" alt="ubSignal app icon" width="96" align="right">
 
-A native Signal messenger for Ubuntu Touch. ubSignal registers the phone as
-the **primary device** of your phone number, like the Signal apps for Android
-and iOS do — no other phone and no pairing (QR-code linking) is needed.
+A native Signal messenger for Ubuntu Touch. ubSignal can register the phone
+as the **primary device** of your phone number, like the Signal apps for
+Android and iOS do — no other phone and no pairing needed. Alternatively it
+can be **linked** to the account of another phone by QR code, like Signal
+Desktop.
 
 The Signal protocol work is done by [presage](https://github.com/whisperfish/presage)
 (Rust, on top of Signal's own `libsignal`). The user interface is Qt 5.12 /
@@ -18,24 +20,36 @@ Names and numbers in the screenshots are placeholders.
 
 ## Features
 
-- Registration as primary device with captcha and SMS or voice-call code
+- Set-up either way: registration as primary device with captcha and SMS or
+  voice-call code, or linking as an additional device of an existing account
+  by scanning a QR code with the Signal app on another phone
 - Profile name
 - One-to-one and group chats: receive, send text and photos
 - Images open full screen with a tap; pinch or double-tap to zoom
+- Emoji panel in the chat (😊), with recently used emoji
 - Voice messages: record (🎤) and play, AAC like Signal's own apps
+- Delivery state of own messages: ✓ sent, ✓✓ delivered, green ✓✓ read;
+  ubSignal confirms delivery and (optionally, Settings) reading in return
+- Rename a one-to-one chat (✎), e.g. for someone not in the address book;
+  address book names and own names are kept over Signal profile names
+- Reactions (press and hold): 👍 👎 ❤️ 😂 😮 😢, shown under the message,
+  also those from others; tap your reaction again to take it back
+- Reply to a message (press and hold → Reply): the reply carries a quote
+  of it, as in Signal's own apps
 - Delete messages (press and hold): for this phone, or for everyone within
   24 hours of sending; deletions by others are applied too
 - New chats by phone number or picked from the address book (after asking
   for permission once; Signal contact discovery is only asked about the
   chosen number)
-- Conversation list with unread counts, notifications while the app runs
+- Conversation list with unread counts, notifications while the app runs:
+  sound selectable (phone default, silent, any of the phone's notification
+  sounds), off for all chats or muted per chat (🔔/🔕 in the chat)
 - Light/dark appearance
 - English, German, French, Spanish and Italian; follows the phone's language
   or a language chosen in the settings
 
-Not (yet) included: calls, stories, reactions and replies (only their text
-is shown where they carry one), registration lock PIN, linking other devices
-(Signal Desktop) to ubSignal.
+Not (yet) included: calls, stories, registration lock PIN, linking further
+devices (Signal Desktop) to ubSignal when it is the primary device.
 
 ## Important before registering
 
@@ -47,6 +61,19 @@ is shown where they carry one), registration lock PIN, linking other devices
   Registration lock). ubSignal cannot answer the PIN challenge.
 - Signal tolerates third-party clients but does not support them; server
   changes can break ubSignal until presage is updated.
+
+## Linking instead
+
+| Choose "Link device" | Scan with the other phone |
+| :---: | :---: |
+| <img src="docs/screenshots/setup-choice.png" alt="ubSignal set-up page with the choice between phone number and linking" width="250"> | <img src="docs/screenshots/setup-link.png" alt="ubSignal showing the QR code for linking" width="250"> |
+
+The QR code in the screenshot is a placeholder (it points to this project).
+
+Choose *Link device* on the set-up page and tap *Show QR code*. On the
+other phone open Signal → Settings → Linked devices → + and scan the code.
+The other phone stays the primary device; ubSignal receives contacts and new
+messages (not the old history) and manages no profile of its own.
 
 ## Registering
 

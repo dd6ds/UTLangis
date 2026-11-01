@@ -2,21 +2,26 @@
 //! registration steps and keeps the receive loop going once registered.
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::str::FromStr;
 
 use presage::libsignal_service::configuration::SignalServers;
 use presage::libsignal_service::prelude::phonenumber::PhoneNumber;
+use presage::libsignal_service::protocol::ServiceId;
 use presage::manager::{Confirmation, RegistrationOptions};
 use presage::model::identity::OnNewIdentity;
+use presage::proto::receipt_message::Type as ReceiptType;
 use presage::{Error, Manager};
 use presage_store_sqlite::SqliteStore;
-use tokio::sync::mpsc::UnboundedReceiver;
+use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio::task::{JoinHandle, LocalSet};
 
 use crate::commands::{self, Command};
 use crate::events::{EventSink, State};
+use crate::linking::{self, LinkResult};
+use crate::receipts::Receipts;
 use crate::receiver;
 use crate::threads::ThreadIndex;
 use crate::titles::SignalManager;
@@ -26,6 +31,10 @@ use crate::titles::SignalManager;
 pub struct Shared {
     pub sink: EventSink,
     pub index: RefCell<ThreadIndex>,
+    pub receipts: RefCell<Receipts>,
+    /// Received messages per thread not yet seen by the user: (sender, sent
+    /// timestamp), for read receipts once the chat is opened.
+    pub unread: RefCell<HashMap<String, Vec<(ServiceId, u64)>>>,
     pub attachments_dir: PathBuf,
 }
 
@@ -40,6 +49,9 @@ struct Worker {
     database: String,
     phase: Phase,
     receiving: Option<JoinHandle<()>>,
+    /// Linking as an additional device, while it waits for the QR scan.
+    linking: Option<JoinHandle<()>>,
+    link_done: UnboundedSender<LinkResult>,
 }
 
 pub fn run(data_dir: PathBuf, sink: EventSink, mut commands: UnboundedReceiver<String>) {
@@ -53,13 +65,22 @@ pub fn run(data_dir: PathBuf, sink: EventSink, mut commands: UnboundedReceiver<S
         let Some(mut worker) = Worker::open(&data_dir, sink).await else {
             return;
         };
-        while let Some(text) = commands.recv().await {
-            match serde_json::from_str::<Command>(&text) {
-                Ok(command) => worker.handle(command).await,
-                Err(error) => worker.shared.sink.error("command", error),
+        let (link_done, mut link_results) = unbounded_channel();
+        worker.link_done = link_done;
+        loop {
+            tokio::select! {
+                text = commands.recv() => {
+                    let Some(text) = text else { break };
+                    match serde_json::from_str::<Command>(&text) {
+                        Ok(command) => worker.handle(command).await,
+                        Err(error) => worker.shared.sink.error("command", error),
+                    }
+                }
+                Some(result) = link_results.recv() => worker.finish_link(result).await,
             }
         }
         worker.stop_receiving();
+        worker.stop_linking();
     });
 }
 
@@ -71,7 +92,7 @@ fn init_logging() {
     let _ = tracing_subscriber::fmt().with_env_filter(filter).with_ansi(false).try_init();
 }
 
-async fn open_store(database: &str) -> Result<SqliteStore, String> {
+pub async fn open_store(database: &str) -> Result<SqliteStore, String> {
     SqliteStore::open_with_passphrase(database, None, OnNewIdentity::Trust)
         .await
         .map_err(|e| e.to_string())
@@ -95,9 +116,19 @@ impl Worker {
         let shared = Rc::new(Shared {
             sink,
             index: RefCell::new(ThreadIndex::load(data_dir)),
+            receipts: RefCell::new(Receipts::load(data_dir)),
+            unread: RefCell::new(HashMap::new()),
             attachments_dir,
         });
-        let mut worker = Worker { shared, database, phase: Phase::Unregistered, receiving: None };
+        let mut worker = Worker {
+            shared,
+            database,
+            phase: Phase::Unregistered,
+            receiving: None,
+            linking: None,
+            // Replaced by run() before the first command.
+            link_done: unbounded_channel().0,
+        };
         match Manager::load_registered(store).await {
             Ok(manager) => worker.enter_registered(manager),
             Err(Error::NotYetRegisteredError) => worker.shared.sink.state(State::Unregistered, ""),
@@ -115,10 +146,19 @@ impl Worker {
                 self.register(&phone, &captcha, voice).await
             }
             Command::Confirm { code } => self.confirm(&code).await,
+            Command::Link { device_name } => self.start_linking(device_name),
+            Command::CancelLink => {
+                self.stop_linking();
+                self.shared.sink.state(State::Unregistered, "");
+            }
             Command::Threads => self.shared.sink.emit(threads_event(&self.shared)),
-            Command::MarkRead { thread } => {
+            Command::MarkRead { thread, read_receipts } => {
                 self.shared.index.borrow_mut().mark_read(&thread);
                 self.shared.sink.emit(threads_event(&self.shared));
+                let seen = self.shared.unread.borrow_mut().remove(&thread).unwrap_or_default();
+                if let (Phase::Registered(manager), true) = (&mut self.phase, read_receipts) {
+                    commands::send_receipts(manager, seen, ReceiptType::Read).await;
+                }
             }
             Command::Reconnect => {
                 if let Phase::Registered(manager) = &self.phase {
@@ -179,8 +219,51 @@ impl Worker {
         }
     }
 
+    fn start_linking(&mut self, device_name: String) {
+        if matches!(self.phase, Phase::Registered(_)) {
+            return self.shared.sink.error("link", "already registered");
+        }
+        self.stop_linking();
+        self.phase = Phase::Unregistered;
+        self.shared.sink.state(State::Linking, "");
+        self.linking = Some(linking::start(
+            self.database.clone(),
+            device_name,
+            Rc::clone(&self.shared),
+            self.link_done.clone(),
+        ));
+    }
+
+    fn stop_linking(&mut self) {
+        if let Some(task) = self.linking.take() {
+            task.abort();
+            let _ = std::fs::remove_file(linking::qr_path(&self.shared));
+        }
+    }
+
+    async fn finish_link(&mut self, result: LinkResult) {
+        self.linking = None;
+        match result {
+            Ok(mut manager) => {
+                // A new device starts without contacts; the primary device
+                // sends them (and their names) on request.
+                if let Err(error) = manager.request_contacts().await {
+                    tracing::info!(%error, "contact sync not requested");
+                }
+                self.enter_registered(manager);
+            }
+            Err(error) => {
+                self.shared.sink.error("link", error);
+                self.shared.sink.state(State::Unregistered, "");
+            }
+        }
+    }
+
     fn enter_registered(&mut self, manager: SignalManager) {
         let phone = manager.registration_data().phone_number.to_string();
+        // Device 1 is the primary device; linked devices have higher ids.
+        let linked = u32::from(manager.device_id()) != 1;
+        self.shared.sink.emit(serde_json::json!({ "ev": "account", "linked": linked }));
         self.shared.sink.state(State::Offline, &phone);
         self.start_receiving(manager.clone());
         self.phase = Phase::Registered(manager);

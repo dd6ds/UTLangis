@@ -15,6 +15,16 @@ pub struct MessageView {
     /// Sent time in milliseconds since the epoch (Signal's message id).
     pub ts: u64,
     pub attachments: Vec<AttachmentPointer>,
+    pub quote: Option<QuoteView>,
+}
+
+/// The message a reply refers to, as the reply carries it.
+pub struct QuoteView {
+    pub author: Option<ServiceId>,
+    /// Quoted one of our own messages.
+    pub own: bool,
+    /// "" when the quoted message only had attachments.
+    pub text: String,
 }
 
 /// `own` is our account id: messages sent from this phone are stored with it
@@ -31,8 +41,45 @@ pub fn view(content: &Content, own: &ServiceId) -> Option<MessageView> {
         ts: data.timestamp.unwrap_or_else(|| content.metadata.client_timestamp
             .timestamp_millis() as u64),
         attachments: data.attachments.clone(),
+        quote: data.quote.as_ref().map(|quote| {
+            let author =
+                quote.author_aci.as_deref().and_then(ServiceId::parse_from_service_id_string);
+            QuoteView {
+                own: author.as_ref() == Some(own),
+                author,
+                text: quote.text.clone().unwrap_or_default(),
+            }
+        }),
     })
 }
+
+/// A reaction to an earlier message of a conversation.
+pub struct ReactionView {
+    pub thread: Thread,
+    /// Sent timestamp of the message reacted to.
+    pub target: u64,
+    /// "me" for our own reactions, otherwise the reactor's service id.
+    pub reactor: String,
+    pub emoji: String,
+    /// The reactor took their reaction back.
+    pub remove: bool,
+}
+
+pub fn reaction(content: &Content, own: &ServiceId) -> Option<ReactionView> {
+    let (data, outgoing) = data_message(&content.body)?;
+    let reaction = data.reaction.as_ref()?;
+    let mine = outgoing || content.metadata.sender == *own;
+    Some(ReactionView {
+        thread: Thread::try_from(content).ok()?,
+        target: reaction.target_sent_timestamp?,
+        reactor: if mine { ME.to_owned() } else { content.metadata.sender.service_id_string() },
+        emoji: reaction.emoji.clone().unwrap_or_default(),
+        remove: reaction.remove.unwrap_or(false),
+    })
+}
+
+/// Reactor name for our own reactions in events and history rows.
+pub const ME: &str = "me";
 
 /// The message a "delete for everyone" request removes: its thread and sent
 /// timestamp. presage has already blanked that message in the store.

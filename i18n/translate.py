@@ -12,6 +12,9 @@ import sys
 import xml.etree.ElementTree as ET
 
 # Long English texts, written once and used as keys in every language.
+LINK_INTRO = 'Use the Signal account of your other phone on this one as well, like Signal Desktop. Both stay signed in.'
+SCAN = 'On your other phone, open Signal → Settings → Linked devices, tap + and scan this code.'
+LINKED = 'This phone is a linked device. The profile is managed on the phone the account was registered with.'
 INTRO = ("ubSignal becomes the Signal app for your number on this phone. Signal on "
          "another phone with the same number will be signed out.")
 REGLOCK = ("If you set a Signal PIN with registration lock, turn the lock off in your "
@@ -25,6 +28,33 @@ BACKGROUND = ("Ubuntu Touch pauses apps in the background, so new messages arriv
               "app suspension for ubSignal (e.g. with UT Tweak Tool).")
 
 DE = {
+    "Phone number": 'Telefonnummer',
+    "Link device": 'Gerät koppeln',
+    LINK_INTRO: 'Nutze das Signal-Konto deines anderen Telefons auch auf diesem, wie Signal Desktop. Beide bleiben angemeldet.',
+    "Show QR code": 'QR-Code anzeigen',
+    SCAN: 'Öffne auf deinem anderen Telefon Signal → Einstellungen → Verknüpfte Geräte, tippe auf + und scanne diesen Code.',
+    LINKED: 'Dieses Telefon ist ein verknüpftes Gerät. Das Profil wird auf dem Telefon verwaltet, mit dem das Konto registriert wurde.',
+    "React with %1": "Mit %1 reagieren",
+    "Keyboard": "Tastatur",
+    "Emoji": "Emoji",
+    "Rename": "Umbenennen",
+    "Leave empty to use the name from the person's Signal profile.":
+        "Leer lassen, um den Namen aus dem Signal-Profil der Person zu verwenden.",
+    "Notifications": "Benachrichtigungen",
+    "Notification sound": "Benachrichtigungston",
+    "Phone default": "Standard des Telefons",
+    "No sound": "Kein Ton",
+    "Unmute": "Stummschaltung aufheben",
+    "Mute": "Stummschalten",
+    "Chat muted": "Chat stummgeschaltet",
+    "Chat unmuted": "Stummschaltung aufgehoben",
+    "Read": "Gelesen",
+    "Delivered": "Zugestellt",
+    "Sent": "Gesendet",
+    "Send read receipts": "Lesebestätigungen senden",
+    "Reply": "Antworten",
+    "You": "Du",
+    "Cancel reply": "Antwort abbrechen",
     "Close": "Schließen",
     "Audio could not be recorded or played: %1": "Audio konnte nicht aufgenommen oder abgespielt werden: %1",
     "Discard recording": "Aufnahme verwerfen",
@@ -116,6 +146,33 @@ DE = {
 }
 
 FR = {
+    "Phone number": 'Numéro de téléphone',
+    "Link device": 'Associer un appareil',
+    LINK_INTRO: 'Utilisez aussi sur ce téléphone le compte Signal de votre autre téléphone, comme Signal Desktop. Les deux restent connectés.',
+    "Show QR code": 'Afficher le code QR',
+    SCAN: 'Sur votre autre téléphone, ouvrez Signal → Paramètres → Appareils associés, touchez + et scannez ce code.',
+    LINKED: 'Ce téléphone est un appareil associé. Le profil est géré sur le téléphone avec lequel le compte a été enregistré.',
+    "React with %1": "Réagir avec %1",
+    "Keyboard": "Clavier",
+    "Emoji": "Emoji",
+    "Rename": "Renommer",
+    "Leave empty to use the name from the person's Signal profile.":
+        "Laissez vide pour utiliser le nom du profil Signal de la personne.",
+    "Notifications": "Notifications",
+    "Notification sound": "Son de notification",
+    "Phone default": "Son par défaut du téléphone",
+    "No sound": "Aucun son",
+    "Unmute": "Réactiver le son",
+    "Mute": "Mettre en sourdine",
+    "Chat muted": "Conversation en sourdine",
+    "Chat unmuted": "Son réactivé",
+    "Read": "Lu",
+    "Delivered": "Distribué",
+    "Sent": "Envoyé",
+    "Send read receipts": "Envoyer les confirmations de lecture",
+    "Reply": "Répondre",
+    "You": "Vous",
+    "Cancel reply": "Annuler la réponse",
     "Close": "Fermer",
     'Audio could not be recorded or played: %1': "Impossible d'enregistrer ou de lire l'audio : %1",
     'Discard recording': "Supprimer l'enregistrement",
@@ -207,6 +264,33 @@ FR = {
 }
 
 ES = {
+    "Phone number": 'Número de teléfono',
+    "Link device": 'Vincular dispositivo',
+    LINK_INTRO: 'Usa también en este teléfono la cuenta de Signal de tu otro teléfono, como Signal Desktop. Ambos siguen conectados.',
+    "Show QR code": 'Mostrar código QR',
+    SCAN: 'En tu otro teléfono, abre Signal → Ajustes → Dispositivos vinculados, toca + y escanea este código.',
+    LINKED: 'Este teléfono es un dispositivo vinculado. El perfil se gestiona en el teléfono con el que se registró la cuenta.',
+    "React with %1": "Reaccionar con %1",
+    "Keyboard": "Teclado",
+    "Emoji": "Emoji",
+    "Rename": "Cambiar nombre",
+    "Leave empty to use the name from the person's Signal profile.":
+        "Déjalo vacío para usar el nombre del perfil de Signal de la persona.",
+    "Notifications": "Notificaciones",
+    "Notification sound": "Sonido de notificación",
+    "Phone default": "Predeterminado del teléfono",
+    "No sound": "Sin sonido",
+    "Unmute": "Activar sonido",
+    "Mute": "Silenciar",
+    "Chat muted": "Chat silenciado",
+    "Chat unmuted": "Chat con sonido",
+    "Read": "Leído",
+    "Delivered": "Entregado",
+    "Sent": "Enviado",
+    "Send read receipts": "Enviar confirmaciones de lectura",
+    "Reply": "Responder",
+    "You": "Tú",
+    "Cancel reply": "Cancelar respuesta",
     "Close": "Cerrar",
     "Audio could not be recorded or played: %1": "No se pudo grabar o reproducir el audio: %1",
     "Discard recording": "Descartar grabación",
@@ -298,6 +382,33 @@ ES = {
 }
 
 IT = {
+    "Phone number": 'Numero di telefono',
+    "Link device": 'Collega dispositivo',
+    LINK_INTRO: "Usa anche su questo telefono l'account Signal dell'altro telefono, come Signal Desktop. Entrambi restano connessi.",
+    "Show QR code": 'Mostra codice QR',
+    SCAN: "Sull'altro telefono apri Signal → Impostazioni → Dispositivi collegati, tocca + e scansiona questo codice.",
+    LINKED: "Questo telefono è un dispositivo collegato. Il profilo si gestisce sul telefono con cui è stato registrato l'account.",
+    "React with %1": "Reagisci con %1",
+    "Keyboard": "Tastiera",
+    "Emoji": "Emoji",
+    "Rename": "Rinomina",
+    "Leave empty to use the name from the person's Signal profile.":
+        "Lascia vuoto per usare il nome del profilo Signal della persona.",
+    "Notifications": "Notifiche",
+    "Notification sound": "Suono di notifica",
+    "Phone default": "Predefinito del telefono",
+    "No sound": "Nessun suono",
+    "Unmute": "Riattiva audio",
+    "Mute": "Silenzia",
+    "Chat muted": "Chat silenziata",
+    "Chat unmuted": "Audio riattivato",
+    "Read": "Letto",
+    "Delivered": "Consegnato",
+    "Sent": "Inviato",
+    "Send read receipts": "Invia conferme di lettura",
+    "Reply": "Rispondi",
+    "You": "Tu",
+    "Cancel reply": "Annulla risposta",
     "Close": "Chiudi",
     'Audio could not be recorded or played: %1': "Impossibile registrare o riprodurre l'audio: %1",
     "Discard recording": "Scarta registrazione",

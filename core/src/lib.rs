@@ -3,23 +3,34 @@
 //! Commands (JSON objects with a "cmd" field):
 //! - `register` {phone, captcha, voice}: request a verification code
 //! - `confirm` {code}: finish the registration as primary device
+//! - `link` {deviceName}: link as an additional device instead (QR code)
+//! - `cancelLink`
 //! - `setProfile` {name}: set the profile name others see
 //! - `threads`: list the conversations
 //! - `history` {thread}: the stored messages of one conversation
-//! - `send` {thread, text, attachments: [paths], voice}
+//! - `send` {thread, text, attachments: [paths], voice, quote: {ts, author, text,
+//!   name}}: `quote` makes it a reply
 //! - `resolve` {phone}: find the Signal account of a phone number
-//! - `markRead` {thread}
+//! - `react` {thread, ts, author, emoji, remove}: react to a message
+//! - `renameThread` {thread, name}: own name for a chat ("" = profile name)
+//! - `markRead` {thread, readReceipts}: also tells the senders (if allowed)
 //! - `deleteMessage` {thread, ts, everyone}: delete for this phone, or for all
 //! - `reconnect`: reopen the message connection (after the app was suspended)
 //!
 //! Events (JSON objects with an "ev" field): `state`, `error`, `threads`,
-//! `history`, `message`, `sent`, `resolved`, `deleted` {thread, ts}. Their fields are built in
+//! `history`, `message`, `sent`, `resolved`, `deleted` {thread, ts},
+//! `receipt` {ts: [..], status}, `merged` {from, to},
+//! `reaction` {thread, target, reactor, emoji, remove}, `linkQr` {path},
+//! `account` {linked}. Their fields are built in
 //! worker.rs and events.rs.
 
 mod commands;
 mod convert;
 mod events;
 mod files;
+mod linking;
+mod qr;
+mod receipts;
 mod receiver;
 mod threads;
 mod titles;

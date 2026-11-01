@@ -7,12 +7,20 @@
 #include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QSettings>
 #include <QUrl>
 
 #include "ubsignal_core.h"
 
-SignalClient::SignalClient(const QString &dataDir, QObject *parent) : QObject(parent)
+namespace {
+const QString kReadReceiptsKey = QStringLiteral("readReceipts");
+}
+
+SignalClient::SignalClient(const QString &dataDir, Notifier *notifier, QObject *parent)
+    : QObject(parent), m_notifier(notifier)
 {
+    // On by default, like in Signal's own apps.
+    m_sendReadReceipts = QSettings().value(kReadReceiptsKey, true).toBool();
     m_started = ubsignal_start(dataDir.toUtf8().constData(), &SignalClient::eventCallback, this);
     if (!m_started)
         qWarning() << "SignalClient: backend did not start, data dir" << dataDir;
@@ -68,6 +76,17 @@ void SignalClient::confirmCode(const QString &code)
              {QStringLiteral("code"), code}});
 }
 
+void SignalClient::linkDevice()
+{
+    m_linkQrPath.clear();
+    command({{QStringLiteral("cmd"), QStringLiteral("link")}});
+}
+
+void SignalClient::cancelLink()
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("cancelLink")}});
+}
+
 void SignalClient::setProfileName(const QString &name)
 {
     command({{QStringLiteral("cmd"), QStringLiteral("setProfile")},
@@ -81,8 +100,7 @@ void SignalClient::openThread(const QString &thread)
     emit currentThreadChanged();
     command({{QStringLiteral("cmd"), QStringLiteral("history")},
              {QStringLiteral("thread"), thread}});
-    command({{QStringLiteral("cmd"), QStringLiteral("markRead")},
-             {QStringLiteral("thread"), thread}});
+    markRead(thread);
 }
 
 void SignalClient::closeThread()
@@ -92,16 +110,21 @@ void SignalClient::closeThread()
     emit currentThreadChanged();
 }
 
-void SignalClient::sendMessage(const QString &text, const QStringList &attachmentUrls)
+void SignalClient::sendMessage(const QString &text, const QStringList &attachmentUrls,
+                               const QVariantMap &quote)
 {
     QJsonArray paths;
     for (const QString &url : attachmentUrls)
         paths.append(QUrl(url).toLocalFile());
+    QJsonObject request{{QStringLiteral("cmd"), QStringLiteral("send")},
+                        {QStringLiteral("thread"), m_currentThread},
+                        {QStringLiteral("text"), text},
+                        {QStringLiteral("attachments"), paths}};
+    if (!quote.isEmpty())
+        request.insert(QStringLiteral("quote"), QJsonObject::fromVariantMap(quote));
+    qDebug() << "SignalClient: sending, attachments" << paths.size() << "reply" << !quote.isEmpty();
     setBusy(true);
-    command({{QStringLiteral("cmd"), QStringLiteral("send")},
-             {QStringLiteral("thread"), m_currentThread},
-             {QStringLiteral("text"), text},
-             {QStringLiteral("attachments"), paths}});
+    command(request);
 }
 
 void SignalClient::deleteMessage(qint64 ts, bool everyone)
@@ -122,6 +145,23 @@ void SignalClient::sendVoiceNote(const QString &url)
              {QStringLiteral("voice"), true}});
 }
 
+void SignalClient::react(qint64 ts, const QString &author, const QString &emoji, bool remove)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("react")},
+             {QStringLiteral("thread"), m_currentThread},
+             {QStringLiteral("ts"), ts},
+             {QStringLiteral("author"), author},
+             {QStringLiteral("emoji"), emoji},
+             {QStringLiteral("remove"), remove}});
+}
+
+void SignalClient::renameThread(const QString &name)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("renameThread")},
+             {QStringLiteral("thread"), m_currentThread},
+             {QStringLiteral("name"), name}});
+}
+
 void SignalClient::startChat(const QString &phone, const QString &name)
 {
     qDebug() << "SignalClient: looking up a number for a new chat";
@@ -137,8 +177,23 @@ void SignalClient::reconnect()
         return;
     command({{QStringLiteral("cmd"), QStringLiteral("reconnect")}});
     if (!m_currentThread.isEmpty())
-        command({{QStringLiteral("cmd"), QStringLiteral("markRead")},
-                 {QStringLiteral("thread"), m_currentThread}});
+        markRead(m_currentThread);
+}
+
+void SignalClient::markRead(const QString &thread)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("markRead")},
+             {QStringLiteral("thread"), thread},
+             {QStringLiteral("readReceipts"), m_sendReadReceipts}});
+}
+
+void SignalClient::setSendReadReceipts(bool send)
+{
+    if (send == m_sendReadReceipts)
+        return;
+    m_sendReadReceipts = send;
+    QSettings().setValue(kReadReceiptsKey, send);
+    emit sendReadReceiptsChanged();
 }
 
 bool SignalClient::isShowing(const QString &thread) const
@@ -153,6 +208,12 @@ void SignalClient::onEvent(const QByteArray &json)
     const QString thread = event.value(QStringLiteral("thread")).toString();
     if (name == QLatin1String("state")) {
         onState(event);
+    } else if (name == QLatin1String("linkQr")) {
+        m_linkQrPath = event.value(QStringLiteral("path")).toString();
+        emit stateChanged();
+    } else if (name == QLatin1String("account")) {
+        m_linked = event.value(QStringLiteral("linked")).toBool();
+        emit stateChanged();
     } else if (name == QLatin1String("threads")) {
         m_threads.reset(event.value(QStringLiteral("threads")).toArray());
         // The title of the open chat may just have become known.
@@ -166,6 +227,21 @@ void SignalClient::onEvent(const QByteArray &json)
         setBusy(false);
         if (thread == m_currentThread)
             m_messages.append(event);
+    } else if (name == QLatin1String("receipt")) {
+        m_messages.setStatus(event.value(QStringLiteral("ts")).toArray(),
+                             event.value(QStringLiteral("status")).toInt());
+    } else if (name == QLatin1String("reaction")) {
+        if (thread == m_currentThread)
+            m_messages.setReaction(
+                    static_cast<qint64>(event.value(QStringLiteral("target")).toDouble()),
+                    event.value(QStringLiteral("reactor")).toString(),
+                    event.value(QStringLiteral("emoji")).toString(),
+                    event.value(QStringLiteral("remove")).toBool());
+    } else if (name == QLatin1String("merged")) {
+        // The open chat was started with a phone number identity and now
+        // continues under the person's account id.
+        if (event.value(QStringLiteral("from")).toString() == m_currentThread)
+            openThread(event.value(QStringLiteral("to")).toString());
     } else if (name == QLatin1String("deleted")) {
         if (thread == m_currentThread)
             m_messages.remove(static_cast<qint64>(event.value(QStringLiteral("ts")).toDouble()));
@@ -183,6 +259,8 @@ void SignalClient::onState(const QJsonObject &event)
 {
     m_state = event.value(QStringLiteral("state")).toString();
     m_phone = event.value(QStringLiteral("phone")).toString();
+    if (m_state != QLatin1String("linking"))
+        m_linkQrPath.clear();
     // A state change ends a registration step; online/offline changes do
     // not affect a send that is in progress.
     if (m_state == QLatin1String("unregistered") || m_state == QLatin1String("awaitingCode"))
@@ -197,14 +275,13 @@ void SignalClient::onIncoming(const QJsonObject &event)
     if (thread == m_currentThread)
         m_messages.append(event);
     if (isShowing(thread)) {
-        command({{QStringLiteral("cmd"), QStringLiteral("markRead")},
-                 {QStringLiteral("thread"), thread}});
+        markRead(thread);
         return;
     }
     if (!event.value(QStringLiteral("outgoing")).toBool())
-        m_notifier.notify(event.value(QStringLiteral("title")).toString(),
-                          event.value(QStringLiteral("senderName")).toString(),
-                          event.value(QStringLiteral("text")).toString());
+        m_notifier->notify(thread, event.value(QStringLiteral("title")).toString(),
+                           event.value(QStringLiteral("senderName")).toString(),
+                           event.value(QStringLiteral("text")).toString());
 }
 
 void SignalClient::onError(const QJsonObject &event)

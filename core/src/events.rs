@@ -15,6 +15,8 @@ pub enum State {
     Unregistered,
     /// A verification code was requested and is awaited.
     AwaitingCode,
+    /// Linking as an additional device: the QR code is shown.
+    Linking,
     /// Registered, but the message connection is not open.
     Offline,
     /// Registered and receiving messages.
@@ -26,6 +28,7 @@ impl State {
         match self {
             State::Unregistered => "unregistered",
             State::AwaitingCode => "awaitingCode",
+            State::Linking => "linking",
             State::Offline => "offline",
             State::Online => "online",
         }
@@ -76,23 +79,38 @@ pub struct StoredFile {
 }
 
 /// One message row as the app shows it ("message" events and "history").
+/// `quote_name` is the name of the quoted message's author ("" if unknown or
+/// if it is one of our own messages).
 pub fn message_json(
     view: &MessageView,
     thread: &str,
     sender_name: &str,
+    quote_name: &str,
     files: &[StoredFile],
 ) -> Value {
-    let attachments: Vec<Value> = files
-        .iter()
-        .map(|f| json!({ "path": f.path, "type": f.content_type }))
-        .collect();
-    json!({
+    let mut row = json!({
         "thread": thread,
         "sender": view.sender.service_id_string(),
         "senderName": sender_name,
         "outgoing": view.outgoing,
         "text": view.text,
         "ts": view.ts,
-        "attachments": attachments,
-    })
+        "attachments": files_json(files),
+    });
+    if let Some(quote) = &view.quote {
+        add_quote(&mut row, &quote.text, quote_name, quote.own);
+    }
+    row
+}
+
+pub fn files_json(files: &[StoredFile]) -> Value {
+    files.iter().map(|f| json!({ "path": f.path, "type": f.content_type })).collect()
+}
+
+/// Adds the quoted message of a reply to a message row.
+pub fn add_quote(row: &mut Value, text: &str, author_name: &str, own: bool) {
+    row["hasQuote"] = true.into();
+    row["quoteText"] = text.into();
+    row["quoteAuthor"] = author_name.into();
+    row["quoteOwn"] = own.into();
 }

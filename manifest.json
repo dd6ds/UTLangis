@@ -1,7 +1,7 @@
 {
   "name": "ubsignal",
   "title": "ubSignal",
-  "version": "0.1.8",
+  "version": "0.2.7",
   "description": "Signal messenger for Ubuntu Touch, registered as the primary device of your number",
   "maintainer": "Developer <developer@example.com>",
   "architecture": "$ENV{CLICK_ARCH}",

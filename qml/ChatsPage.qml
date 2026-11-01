@@ -80,7 +80,8 @@ Page {
     }
 
     Component.onCompleted: {
-        if (!page.app.settings.profileAsked) {
+        // A linked device uses the profile of its account.
+        if (!page.app.settings.profileAsked && !Signal.linked) {
             page.app.settings.profileAsked = true
             profileDialog.open()
         }

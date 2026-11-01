@@ -36,7 +36,9 @@ Dialog {
     onRejected: app.settings.contactsAccess = "denied"
 
     ColumnLayout {
-        width: parent.width
+        // availableWidth, not parent.width: the dialog's size follows its
+        // content, so filling the parent would bind both ways.
+        width: dialog.availableWidth
         spacing: dialog.app.spacingUnit
 
         AppLabel {

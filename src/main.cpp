@@ -39,7 +39,9 @@ static int gridUnitPx()
 static SignalClient *exposeBackend(QQmlApplicationEngine &engine)
 {
     // Owned by the engine so it outlives every QML binding during shutdown.
-    auto *client = new SignalClient(dataDir(), &engine);
+    auto *notifier = new Notifier(&engine);
+    auto *client = new SignalClient(dataDir(), notifier, &engine);
+    engine.rootContext()->setContextProperty(QStringLiteral("Notifications"), notifier);
     qmlRegisterUncreatableType<ThreadListModel>(
         "ubSignal", 1, 0, "ThreadListModel", QStringLiteral("Provided by Signal.threads"));
     qmlRegisterUncreatableType<MessageListModel>(

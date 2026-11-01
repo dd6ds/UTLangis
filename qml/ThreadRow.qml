@@ -28,7 +28,8 @@ ItemDelegate {
 
             AppLabel {
                 Layout.fillWidth: true
-                text: title.length ? title : qsTr("Unknown contact")
+                text: (title.length ? title : qsTr("Unknown contact"))
+                      + (Notifications.mutedThreads.indexOf(thread) >= 0 ? "  🔕" : "")
                 font.bold: unread > 0
                 elide: Text.ElideRight
             }

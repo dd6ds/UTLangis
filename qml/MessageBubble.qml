@@ -4,19 +4,63 @@ import QtQuick.Layouts 1.12
 
 // One message: own messages on the right, others on the left with the
 // sender's name in groups. Images are shown inline, other attachments as
-// their file name. Press and hold offers to delete it. Uses the roles of
+// their file name; a reply shows the quoted message on top. Press and hold
+// offers to react, reply or delete; reactions show below the bubble. Uses the roles of
 // MessageListModel.
 Item {
     id: bubble
     property var app
 
-    // Press and hold on the bubble.
-    signal deleteRequested()
+    // Press and hold on the bubble: reply or delete.
+    signal actionsRequested()
 
     readonly property real maxBubbleWidth: width * 0.8
     readonly property color textColor: outgoing ? app.colorBubbleOwnText : app.colorText
 
-    implicitHeight: box.height
+    // "👍 2  ❤️" for the reactions to this message ("" = none).
+    readonly property string reactionSummary: {
+        var counts = {}
+        var order = []
+        for (var reactor in reactions) {
+            var emoji = reactions[reactor]
+            if (counts[emoji] === undefined) {
+                counts[emoji] = 0
+                order.push(emoji)
+            }
+            counts[emoji] += 1
+        }
+        return order.map(function (e) { return counts[e] > 1 ? e + " " + counts[e] : e })
+                    .join("  ")
+    }
+
+    implicitHeight: box.height + (reactionSummary.length ? reactionChip.height * 0.7 : 0)
+
+    // Reactions, overlapping the lower edge of the bubble like in Signal.
+    Rectangle {
+        id: reactionChip
+        z: 1
+        visible: bubble.reactionSummary.length > 0
+        anchors.top: box.bottom
+        anchors.topMargin: -height * 0.3
+        anchors.right: outgoing ? box.right : undefined
+        anchors.left: outgoing ? undefined : box.left
+        anchors.leftMargin: bubble.app.gu
+        anchors.rightMargin: bubble.app.gu
+        width: chipText.implicitWidth + bubble.app.gu * 1.2
+        height: chipText.implicitHeight + bubble.app.gu * 0.4
+        radius: height / 2
+        color: bubble.app.colorSurface
+        border.color: bubble.app.colorBorder
+
+        Text {
+            id: chipText
+            anchors.centerIn: parent
+            text: bubble.reactionSummary
+            color: bubble.app.colorText
+            font.family: "Noto Color Emoji"
+            font.pixelSize: bubble.app.fontSecondary
+        }
+    }
 
     Rectangle {
         id: box
@@ -31,7 +75,7 @@ Item {
 
         MouseArea {
             anchors.fill: parent
-            onPressAndHold: bubble.deleteRequested()
+            onPressAndHold: bubble.actionsRequested()
         }
 
         ColumnLayout {
@@ -49,6 +93,16 @@ Item {
                 font.bold: true
             }
 
+            QuoteView {
+                Layout.maximumWidth: bubble.maxBubbleWidth - 2 * bubble.app.gu
+                Layout.fillWidth: true
+                visible: hasQuote
+                app: bubble.app
+                author: quoteOwn ? qsTr("You") : quoteAuthor
+                quotedText: quoteText
+                textColor: bubble.textColor
+            }
+
             Repeater {
                 model: attachments
                 delegate: AttachmentView {
@@ -57,7 +111,7 @@ Item {
                     path: modelData.path
                     contentType: modelData.type
                     textColor: bubble.textColor
-                    onPressAndHeld: bubble.deleteRequested()
+                    onPressAndHeld: bubble.actionsRequested()
                 }
             }
 
@@ -70,12 +124,28 @@ Item {
                 textFormat: Text.PlainText
             }
 
-            Label {
+            // Time, and for own messages the delivery state: ✓ sent,
+            // ✓✓ on the recipient's phone, green ✓✓ read.
+            RowLayout {
                 Layout.alignment: Qt.AlignRight
-                text: bubble.app.timeText(ts)
-                color: bubble.textColor
-                opacity: 0.7
-                font.pixelSize: bubble.app.fontSecondary * 0.85
+                spacing: bubble.app.gu * 0.5
+
+                Label {
+                    text: bubble.app.timeText(ts)
+                    color: bubble.textColor
+                    opacity: 0.7
+                    font.pixelSize: bubble.app.fontSecondary * 0.85
+                }
+                Label {
+                    visible: outgoing && status > 0
+                    text: status >= 2 ? "✓✓" : "✓"
+                    color: status >= 3 ? bubble.app.colorReadReceipt : bubble.textColor
+                    opacity: status >= 3 ? 1 : 0.7
+                    font.pixelSize: bubble.app.fontSecondary * 0.85
+                    font.bold: status >= 3
+                    Accessible.name: status >= 3 ? qsTr("Read")
+                                   : status >= 2 ? qsTr("Delivered") : qsTr("Sent")
+                }
             }
         }
     }

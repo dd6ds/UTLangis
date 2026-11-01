@@ -52,6 +52,8 @@ ApplicationWindow {
     readonly property color colorInactive:        darkMode ? "#757575" : "#9e9e9e"
     readonly property color colorBubbleOwn:       darkMode ? "#2c4f8f" : "#2c6bed"
     readonly property color colorBubbleOwnText:   "#ffffff"
+    // Shown on own (blue) bubbles, so it has to stand out from them.
+    readonly property color colorReadReceipt:     "#9cf09c"
     readonly property color colorBubbleOther:     darkMode ? "#2a2e31" : "#e9e9eb"
 
     palette.window: colorBackground

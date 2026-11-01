@@ -65,12 +65,47 @@
 <context>
     <name>ChatPage</name>
     <message>
-        <location filename="../qml/ChatPage.qml" line="+18" />
+        <location filename="../qml/ChatPage.qml" line="+39" />
         <source>Unknown contact</source>
         <translation>Contacto desconocido</translation>
     </message>
     <message>
-        <location line="+61" />
+        <location line="+8" />
+        <source>Rename</source>
+        <translation>Cambiar nombre</translation>
+    </message>
+    <message>
+        <location line="+6" />
+        <source>Unmute</source>
+        <translation>Activar sonido</translation>
+    </message>
+    <message>
+        <location line="+0" />
+        <source>Mute</source>
+        <translation>Silenciar</translation>
+    </message>
+    <message>
+        <location line="+3" />
+        <source>Chat muted</source>
+        <translation>Chat silenciado</translation>
+    </message>
+    <message>
+        <location line="+0" />
+        <source>Chat unmuted</source>
+        <translation>Chat con sonido</translation>
+    </message>
+    <message>
+        <location line="+85" />
+        <source>You</source>
+        <translation>Tú</translation>
+    </message>
+    <message>
+        <location line="+7" />
+        <source>Cancel reply</source>
+        <translation>Cancelar respuesta</translation>
+    </message>
+    <message>
+        <location line="+24" />
         <source>Remove photo</source>
         <translation>Quitar foto</translation>
     </message>
@@ -80,7 +115,17 @@
         <translation>Adjuntar foto</translation>
     </message>
     <message>
-        <location line="+7" />
+        <location line="+6" />
+        <source>Keyboard</source>
+        <translation>Teclado</translation>
+    </message>
+    <message>
+        <location line="+0" />
+        <source>Emoji</source>
+        <translation>Emoji</translation>
+    </message>
+    <message>
+        <location line="+16" />
         <source>Record voice message</source>
         <translation>Grabar mensaje de voz</translation>
     </message>
@@ -175,7 +220,7 @@
         <translation>Permitir</translation>
     </message>
     <message>
-        <location line="+18" />
+        <location line="+20" />
         <source>ubSignal would like to read your address book so you can pick the person to write to.</source>
         <translation>ubSignal quiere leer tu agenda para que puedas elegir a quién escribir.</translation>
     </message>
@@ -183,29 +228,6 @@
         <location line="+9" />
         <source>Your contacts stay on this phone. Only the number you choose is looked up at Signal. You can change this later in Settings.</source>
         <translation>Tus contactos se quedan en este teléfono. Solo se consulta en Signal el número que elijas. Puedes cambiarlo más tarde en Ajustes.</translation>
-    </message>
-</context>
-<context>
-    <name>DeleteMessageDialog</name>
-    <message>
-        <location filename="../qml/DeleteMessageDialog.qml" line="+29" />
-        <source>Delete message?</source>
-        <translation>¿Eliminar mensaje?</translation>
-    </message>
-    <message>
-        <location line="+8" />
-        <source>Delete for me</source>
-        <translation>Eliminar para mí</translation>
-    </message>
-    <message>
-        <location line="+10" />
-        <source>Delete for everyone</source>
-        <translation>Eliminar para todos</translation>
-    </message>
-    <message>
-        <location line="+10" />
-        <source>Cancel</source>
-        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -238,6 +260,57 @@
     </message>
 </context>
 <context>
+    <name>MessageActionsDialog</name>
+    <message>
+        <location filename="../qml/MessageActionsDialog.qml" line="+61" />
+        <source>React with %1</source>
+        <translation>Reaccionar con %1</translation>
+    </message>
+    <message>
+        <location line="+8" />
+        <source>Reply</source>
+        <translation>Responder</translation>
+    </message>
+    <message>
+        <location line="+9" />
+        <source>Delete for me</source>
+        <translation>Eliminar para mí</translation>
+    </message>
+    <message>
+        <location line="+10" />
+        <source>Delete for everyone</source>
+        <translation>Eliminar para todos</translation>
+    </message>
+    <message>
+        <location line="+10" />
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+</context>
+<context>
+    <name>MessageBubble</name>
+    <message>
+        <location filename="../qml/MessageBubble.qml" line="+101" />
+        <source>You</source>
+        <translation>Tú</translation>
+    </message>
+    <message>
+        <location line="+45" />
+        <source>Read</source>
+        <translation>Leído</translation>
+    </message>
+    <message>
+        <location line="+1" />
+        <source>Delivered</source>
+        <translation>Entregado</translation>
+    </message>
+    <message>
+        <location line="+0" />
+        <source>Sent</source>
+        <translation>Enviado</translation>
+    </message>
+</context>
+<context>
     <name>NewChatDialog</name>
     <message>
         <location filename="../qml/NewChatDialog.qml" line="+16" />
@@ -245,7 +318,7 @@
         <translation>Nuevo chat</translation>
     </message>
     <message>
-        <location line="+14" />
+        <location line="+16" />
         <source>Choose from contacts</source>
         <translation>Elegir de los contactos</translation>
     </message>
@@ -268,7 +341,7 @@
 <context>
     <name>Notifier</name>
     <message>
-        <location filename="../src/notifier.cpp" line="+33" />
+        <location filename="../src/notifier.cpp" line="+154" />
         <source>Attachment</source>
         <translation>Adjunto</translation>
     </message>
@@ -286,7 +359,7 @@
         <translation>Tu nombre</translation>
     </message>
     <message>
-        <location line="+16" />
+        <location line="+18" />
         <source>This name is shown to the people you write to.</source>
         <translation>Este nombre lo ven las personas a las que escribes.</translation>
     </message>
@@ -299,12 +372,42 @@
 <context>
     <name>RegisterPage</name>
     <message>
-        <location filename="../qml/RegisterPage.qml" line="+21" />
+        <location filename="../qml/RegisterPage.qml" line="+29" />
         <source>Set up Signal</source>
         <translation>Configurar Signal</translation>
     </message>
     <message>
-        <location line="+45" />
+        <location line="+55" />
+        <source>Phone number</source>
+        <translation>Número de teléfono</translation>
+    </message>
+    <message>
+        <location line="+8" />
+        <source>Link device</source>
+        <translation>Vincular dispositivo</translation>
+    </message>
+    <message>
+        <location line="+9" />
+        <source>Use the Signal account of your other phone on this one as well, like Signal Desktop. Both stay signed in.</source>
+        <translation>Usa también en este teléfono la cuenta de Signal de tu otro teléfono, como Signal Desktop. Ambos siguen conectados.</translation>
+    </message>
+    <message>
+        <location line="+7" />
+        <source>Show QR code</source>
+        <translation>Mostrar código QR</translation>
+    </message>
+    <message>
+        <location line="+11" />
+        <source>On your other phone, open Signal → Settings → Linked devices, tap + and scan this code.</source>
+        <translation>En tu otro teléfono, abre Signal → Ajustes → Dispositivos vinculados, toca + y escanea este código.</translation>
+    </message>
+    <message>
+        <location line="+30" />
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location line="+8" />
         <source>ubSignal becomes the Signal app for your number on this phone. Signal on another phone with the same number will be signed out.</source>
         <translation>ubSignal se convierte en la app de Signal de tu número en este teléfono. Signal se cerrará en cualquier otro teléfono con el mismo número.</translation>
     </message>
@@ -355,6 +458,24 @@
     </message>
 </context>
 <context>
+    <name>RenameDialog</name>
+    <message>
+        <location filename="../qml/RenameDialog.qml" line="+16" />
+        <source>Rename</source>
+        <translation>Cambiar nombre</translation>
+    </message>
+    <message>
+        <location line="+22" />
+        <source>Name</source>
+        <translation>Nombre</translation>
+    </message>
+    <message>
+        <location line="+9" />
+        <source>Leave empty to use the name from the person's Signal profile.</source>
+        <translation>Déjalo vacío para usar el nombre del perfil de Signal de la persona.</translation>
+    </message>
+</context>
+<context>
     <name>SettingsPage</name>
     <message>
         <location filename="../qml/SettingsPage.qml" line="+15" />
@@ -362,12 +483,17 @@
         <translation>Ajustes</translation>
     </message>
     <message>
-        <location line="+19" />
+        <location line="+21" />
         <source>Registered number: %1</source>
         <translation>Número registrado: %1</translation>
     </message>
     <message>
-        <location line="+5" />
+        <location line="+9" />
+        <source>This phone is a linked device. The profile is managed on the phone the account was registered with.</source>
+        <translation>Este teléfono es un dispositivo vinculado. El perfil se gestiona en el teléfono con el que se registró la cuenta.</translation>
+    </message>
+    <message>
+        <location line="+7" />
         <source>Change profile name</source>
         <translation>Cambiar nombre de perfil</translation>
     </message>
@@ -375,6 +501,31 @@
         <location line="+9" />
         <source>Allow access to contacts</source>
         <translation>Permitir el acceso a los contactos</translation>
+    </message>
+    <message>
+        <location line="+14" />
+        <source>Notifications</source>
+        <translation>Notificaciones</translation>
+    </message>
+    <message>
+        <location line="+12" />
+        <source>Notification sound</source>
+        <translation>Sonido de notificación</translation>
+    </message>
+    <message>
+        <location line="+13" />
+        <source>Phone default</source>
+        <translation>Predeterminado del teléfono</translation>
+    </message>
+    <message>
+        <location line="+1" />
+        <source>No sound</source>
+        <translation>Sin sonido</translation>
+    </message>
+    <message>
+        <location line="+17" />
+        <source>Send read receipts</source>
+        <translation>Enviar confirmaciones de lectura</translation>
     </message>
     <message>
         <location line="+26" />
@@ -401,7 +552,7 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../qml/main.qml" line="+129" />
+        <location filename="../qml/main.qml" line="+131" />
         <source>Access to contacts is off. You can allow it in Settings.</source>
         <translation>El acceso a los contactos está desactivado. Puedes permitirlo en Ajustes.</translation>
     </message>
