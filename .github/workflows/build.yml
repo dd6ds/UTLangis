@@ -100,8 +100,9 @@ jobs:
           cat > notes.md <<NOTES
           UT Langis ${{ steps.version.outputs.version }} for Ubuntu Touch (arm64), built from commit ${GITHUB_SHA::7}.
 
-          **Install:** copy the .click file to the phone and open it with the
-          OpenStore app, or install it from a checkout with \`clickable install\`.
+          **Install:** download the .click file on the phone and open it with the
+          OpenStore app, or install it with adb. "Installation" in the README
+          describes both, and how to turn on developer mode.
 
           **Before registering:** your number moves to this phone - Signal on
           another phone with the same number is signed out. Turn off a

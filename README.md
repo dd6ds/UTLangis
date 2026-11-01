@@ -51,6 +51,79 @@ Names and numbers in the screenshots are placeholders.
 Not (yet) included: calls, stories, registration lock PIN, linking further
 devices (Signal Desktop) to UT Langis when it is the primary device.
 
+## Installation
+
+Ready-built packages are on the
+[Releases page](https://github.com/dd6ds/UTLangis/releases):
+`utlangis_<version>_arm64.click`, for 64-bit ARM phones with Ubuntu Touch
+20.04 or later. A newer version installs over an older one; the account
+and chats stay.
+
+### On the phone, without a computer
+
+1. Open the Releases page in the phone's browser and download the `.click`
+   file.
+2. Open the download with the **OpenStore** app (choose OpenStore when the
+   phone asks which app should open it, or open the file from the file
+   manager).
+3. OpenStore warns that the app does not come from the store; confirm
+   *Install*. UT Langis then shows up in the app drawer.
+
+### Turning on developer mode (for adb)
+
+Installing from a computer goes through `adb`, which needs developer mode:
+
+1. Set a screen lock first: *System Settings → Security & Privacy → Lock
+   security* → *Passcode* or *Passphrase*. Developer mode stays greyed out
+   without one.
+2. *System Settings → About → Developer mode* → switch it on.
+3. Connect the phone by USB and unlock it. If the phone asks whether to
+   allow the computer, confirm.
+4. On the computer, install adb (Debian/Ubuntu: `sudo apt install adb`,
+   Arch/Manjaro: `sudo pacman -S android-tools`) and check:
+
+   ```bash
+   adb devices        # lists the phone as "device"
+   ```
+
+   "unauthorized" means the phone is locked or the question on the phone
+   was not confirmed; "no permissions" on Linux usually means missing udev
+   rules (Debian/Ubuntu: `sudo apt install android-sdk-platform-tools-common`,
+   then reconnect).
+
+Turn developer mode off again when you no longer need it: while it is on,
+anyone with your screen code and a USB cable has a shell on the phone.
+
+### With adb
+
+```bash
+CLICK=utlangis_0.3.0_arm64.click      # the file you downloaded or built
+
+adb push "$CLICK" /home/phablet/
+adb shell gdbus call --system --dest com.lomiri.click \
+    --object-path /com/lomiri/click --method com.lomiri.click.Install \
+    /home/phablet/"$CLICK"
+adb shell rm /home/phablet/"$CLICK"
+```
+
+Check and start it:
+
+```bash
+adb shell click list --user=phablet | grep utlangis
+adb shell lomiri-app-launch utlangis_utlangis
+```
+
+On Ubuntu Touch 16.04 the install command is
+`adb shell pkcon install-local --allow-untrusted /home/phablet/"$CLICK"`.
+
+From a checkout of this repository, `clickable install` does the same with
+the package built by `clickable build`.
+
+### Removing it
+
+*OpenStore → Installed apps → UT Langis → Remove*. This also deletes the
+account and chats on the phone (see "Data on the phone").
+
 ## Important before registering
 
 - **Your number moves to this phone.** Registering signs Signal out on any
