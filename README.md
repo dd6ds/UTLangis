@@ -280,4 +280,6 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
 
 ## License
 
-AGPL-3.0, as presage and libsignal, see `LICENSE`.
+GPL-3.0, see `LICENSE`. The linked libraries presage and libsignal
+remain under their own license (AGPL-3.0), which also applies to builds
+that include them.
