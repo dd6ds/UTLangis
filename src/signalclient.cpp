@@ -18,7 +18,7 @@ const QString kReadReceiptsKey = QStringLiteral("readReceipts");
 }
 
 SignalClient::SignalClient(const QString &dataDir, Notifier *notifier, QObject *parent)
-    : QObject(parent), m_notifier(notifier)
+    : QObject(parent), m_notifier(notifier), m_dataDir(dataDir)
 {
     // On by default, like in Signal's own apps.
     m_sendReadReceipts = QSettings().value(kReadReceiptsKey, true).toBool();
@@ -146,6 +146,14 @@ void SignalClient::sendVoiceNote(const QString &url)
              {QStringLiteral("voice"), true}});
 }
 
+void SignalClient::editMessage(qint64 ts, const QString &text)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("editMessage")},
+             {QStringLiteral("thread"), m_currentThread},
+             {QStringLiteral("ts"), ts},
+             {QStringLiteral("text"), text}});
+}
+
 void SignalClient::react(qint64 ts, const QString &author, const QString &emoji, bool remove)
 {
     command({{QStringLiteral("cmd"), QStringLiteral("react")},
@@ -177,6 +185,74 @@ void SignalClient::startChat(const QString &phone, const QString &name)
     command({{QStringLiteral("cmd"), QStringLiteral("resolve")},
              {QStringLiteral("phone"), phone},
              {QStringLiteral("name"), name}});
+}
+
+QString SignalClient::qrPhotoPath() const
+{
+    // Next to the app's data, where confined apps may write; the backend
+    // removes the photo once it has looked at it.
+    return m_dataDir + QStringLiteral("/qr-scan.jpg");
+}
+
+void SignalClient::scanQr(const QString &path)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("scanQr")},
+             {QStringLiteral("path"), path}});
+}
+
+void SignalClient::linkDevice(const QString &url)
+{
+    setBusy(true);
+    command({{QStringLiteral("cmd"), QStringLiteral("linkDevice")},
+             {QStringLiteral("url"), url}});
+}
+
+void SignalClient::refreshDevices()
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("devices")}});
+}
+
+void SignalClient::unlinkDevice(int id)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("unlinkDevice")},
+             {QStringLiteral("id"), id}});
+}
+
+void SignalClient::sendCallSignal(const QJsonObject &signal)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("sendCallSignal")},
+             {QStringLiteral("signal"), signal}});
+}
+
+void SignalClient::requestTurnServers()
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("turnServers")}});
+}
+
+void SignalClient::callAnswered(const QString &callId)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("callAnswered")},
+             {QStringLiteral("callId"), callId}});
+}
+
+void SignalClient::callStarted(const QString &thread, bool video)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("callStarted")},
+             {QStringLiteral("thread"), thread},
+             {QStringLiteral("video"), video}});
+}
+
+void SignalClient::mergeChats(const QString &from, const QString &to)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("mergeChats")},
+             {QStringLiteral("from"), from},
+             {QStringLiteral("to"), to}});
+}
+
+void SignalClient::declineCall(const QString &callId)
+{
+    command({{QStringLiteral("cmd"), QStringLiteral("declineCall")},
+             {QStringLiteral("callId"), callId}});
 }
 
 void SignalClient::reconnect()
@@ -238,6 +314,43 @@ void SignalClient::onEvent(const QByteArray &json)
     } else if (name == QLatin1String("receipt")) {
         m_messages.setStatus(event.value(QStringLiteral("ts")).toArray(),
                              event.value(QStringLiteral("status")).toInt());
+    } else if (name == QLatin1String("qrScanned")) {
+        emit qrScanned(event.value(QStringLiteral("text")).toString());
+    } else if (name == QLatin1String("qrNone")) {
+        emit qrNotFound();
+    } else if (name == QLatin1String("deviceLinked")) {
+        setBusy(false);
+        emit deviceLinked();
+    } else if (name == QLatin1String("devices")) {
+        m_devices = event.value(QStringLiteral("devices")).toArray().toVariantList();
+        emit devicesChanged();
+    } else if (name == QLatin1String("callSignal")) {
+        emit callSignal(event);
+    } else if (name == QLatin1String("turnServers")) {
+        emit turnServersReceived(event.value(QStringLiteral("servers")).toArray(),
+                                 event.value(QStringLiteral("localDeviceId")).toInt());
+    } else if (name == QLatin1String("incomingCall")) {
+        const bool video = event.value(QStringLiteral("video")).toBool();
+        m_notifier->notify(thread, event.value(QStringLiteral("title")).toString(), QString(),
+                           video ? tr("📞 Incoming video call") : tr("📞 Incoming call"));
+        emit incomingCall(event.value(QStringLiteral("callId")).toString(), thread,
+                          event.value(QStringLiteral("title")).toString(), video);
+    } else if (name == QLatin1String("call")) {
+        if (thread == m_currentThread)
+            m_messages.append(event);
+        if (event.value(QStringLiteral("call")).toString() == QLatin1String("missed")
+                && !isShowing(thread))
+            m_notifier->notify(thread, event.value(QStringLiteral("title")).toString(), QString(),
+                               event.value(QStringLiteral("video")).toBool()
+                                       ? tr("📞 Missed video call") : tr("📞 Missed call"));
+        const QString callId = event.value(QStringLiteral("callId")).toString();
+        if (!callId.isEmpty())
+            emit callEnded(callId);
+    } else if (name == QLatin1String("edited")) {
+        if (thread == m_currentThread)
+            m_messages.setEdited(
+                    static_cast<qint64>(event.value(QStringLiteral("target")).toDouble()),
+                    event.value(QStringLiteral("text")).toString());
     } else if (name == QLatin1String("reaction")) {
         if (thread == m_currentThread)
             m_messages.setReaction(

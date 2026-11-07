@@ -1,0 +1,20 @@
+[package]
+name = "utlangis-calls"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-only"
+publish = false
+description = "1:1 Signal calls for UT Langis, on Signal's RingRTC"
+
+# Built inside a RingRTC checkout (as a member of its workspace, so RingRTC's
+# Cargo.lock applies), see build-calls.sh. A shared library of its own: WebRTC
+# brings its own BoringSSL, which must not clash with the one of the Signal
+# backend (libutlangis_core). A cdylib exports only the ut_calls_* functions.
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+ringrtc = { path = "../src/rust", features = ["native"] }
+base64 = "0.23"
+log = "0.4"
+serde_json = "1"

@@ -4,6 +4,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
 import Qt.labs.settings 1.0
+import QtSystemInfo 5.0
 
 // Application window: scaling, colours, settings, the page stack and the
 // switch between registration and chats. The pages live in their own files
@@ -38,23 +39,24 @@ ApplicationWindow {
     // and "dark" are fixed.
     readonly property bool darkMode: settings.themeMode === "dark"
                                      || (settings.themeMode === "system" && SystemTheme.dark)
+    // Close to Signal's own colours.
     readonly property color colorBackground:      darkMode ? "#121212" : "#ffffff"
-    readonly property color colorSurface:         darkMode ? "#1f2326" : "#f0f0f0"
-    readonly property color colorSurfacePressed:  darkMode ? "#2d4a66" : "#b0d4ff"
-    readonly property color colorFieldBackground: darkMode ? "#262a2d" : "#ffffff"
-    readonly property color colorText:            darkMode ? "#eeeeee" : "#111111"
-    readonly property color colorSecondaryText:   darkMode ? "#a8a8a8" : "#666666"
-    readonly property color colorPlaceholder:     darkMode ? "#777777" : "#999999"
-    readonly property color colorBorder:          darkMode ? "#4a4f53" : "#cccccc"
-    readonly property color colorAccent:          darkMode ? "#5a8dee" : "#2c6bed"
+    readonly property color colorSurface:         darkMode ? "#262626" : "#f2f2f4"
+    readonly property color colorSurfacePressed:  darkMode ? "#2e3442" : "#e2e8f6"
+    readonly property color colorFieldBackground: darkMode ? "#262626" : "#ffffff"
+    readonly property color colorText:            darkMode ? "#e9e9e9" : "#1b1b1d"
+    readonly property color colorSecondaryText:   darkMode ? "#a2a2a6" : "#5e5e62"
+    readonly property color colorPlaceholder:     darkMode ? "#7a7a7e" : "#8e8e93"
+    readonly property color colorBorder:          darkMode ? "#3a3a3c" : "#dcdce0"
+    readonly property color colorAccent:          darkMode ? "#4f86f7" : "#2c6bed"
     readonly property color colorSuccess:         darkMode ? "#66bb6a" : "#2e7d32"
     readonly property color colorError:           darkMode ? "#ef5350" : "#c62828"
     readonly property color colorInactive:        darkMode ? "#757575" : "#9e9e9e"
-    readonly property color colorBubbleOwn:       darkMode ? "#2c4f8f" : "#2c6bed"
+    readonly property color colorBubbleOwn:       "#2c6bed"
     readonly property color colorBubbleOwnText:   "#ffffff"
     // Shown on own (blue) bubbles, so it has to stand out from them.
     readonly property color colorReadReceipt:     "#9cf09c"
-    readonly property color colorBubbleOther:     darkMode ? "#2a2e31" : "#e9e9eb"
+    readonly property color colorBubbleOther:     darkMode ? "#303133" : "#e9e9eb"
 
     palette.window: colorBackground
     palette.windowText: colorText
@@ -79,6 +81,8 @@ ApplicationWindow {
         property string phone: "+49"
         // Whether the user was asked for a profile name after registering.
         property bool profileAsked: false
+        // Shutter click of the QR scanner's photos.
+        property bool shutterSound: true
     }
     property alias settings: settings
 
@@ -91,6 +95,29 @@ ApplicationWindow {
         var today = new Date()
         today.setHours(0, 0, 0, 0)
         return Qt.formatDateTime(d, d.getTime() < today.getTime() ? "dd.MM. hh:mm" : "hh:mm")
+    }
+
+    function sameDay(a, b) {
+        var x = new Date(a)
+        var y = new Date(b)
+        return x.getFullYear() === y.getFullYear() && x.getMonth() === y.getMonth()
+                && x.getDate() === y.getDate()
+    }
+
+    // "Today", "Yesterday", the weekday within a week, else the date.
+    function dayText(ts) {
+        var d = new Date(ts)
+        d.setHours(0, 0, 0, 0)
+        var today = new Date()
+        today.setHours(0, 0, 0, 0)
+        var days = Math.round((today.getTime() - d.getTime()) / 86400000)
+        if (days === 0)
+            return qsTr("Today")
+        if (days === 1)
+            return qsTr("Yesterday")
+        if (days > 1 && days < 7)
+            return d.toLocaleDateString(Qt.locale(), "dddd")
+        return d.toLocaleDateString(Qt.locale(), Locale.ShortFormat)
     }
 
     // "m:ss" for a length in milliseconds (voice messages).
@@ -136,8 +163,46 @@ ApplicationWindow {
             numberChoice.openFor(contact)
     }
 
-    function openImage(path) {
-        stack.push(Qt.resolvedUrl("ImageViewerPage.qml"), { app: rootWindow, path: path })
+    // The images of a message full screen, starting at `index`.
+    function openImages(paths, index, message) {
+        stack.push(Qt.resolvedUrl("ImageViewerPage.qml"),
+                   { app: rootWindow, paths: paths, startIndex: index,
+                     message: message || null })
+    }
+
+    // Back to the open chat, replying to `message`.
+    function replyInChat(message) {
+        var chat = stack.find(function(item) { return item.objectName === "chatPage" })
+        if (!chat)
+            return
+        stack.pop(chat)
+        chat.startReply(message)
+    }
+
+    // Crop page for the photo at `url`; `accept` gets the result's URL.
+    function openCropper(url, accept) {
+        stack.push(Qt.resolvedUrl("CropPage.qml"),
+                   { app: rootWindow, source: url, accept: accept })
+    }
+
+    // Back to the open chat, with the photo at `url` waiting to be sent.
+    function photoToChat(url) {
+        var chat = stack.find(function(item) { return item.objectName === "chatPage" })
+        if (!chat)
+            return
+        stack.pop(chat)
+        chat.pendingPhoto = url
+    }
+
+    function openVideo(path, contentType, message) {
+        stack.push(Qt.resolvedUrl("VideoPlayerPage.qml"),
+                   { app: rootWindow, path: path, contentType: contentType,
+                     message: message || null })
+    }
+
+    // Lets the user open or save a received file with another app.
+    function exportFile(path, contentType) {
+        exportPicker.exportFile(path, contentType)
     }
 
     function openSettings() {
@@ -162,6 +227,8 @@ ApplicationWindow {
             return qsTr("Please enter the number in international format, e.g. +491701234567.")
         case "noAccount":
             return qsTr("This number does not use Signal.")
+        case "notLinkCode":
+            return qsTr("This QR code is not a Signal code for linking a device.")
         default:
             return message
         }
@@ -202,6 +269,25 @@ ApplicationWindow {
     NumberChoiceDialog {
         id: numberChoice
         app: rootWindow
+    }
+
+    IncomingCallDialog {
+        app: rootWindow
+    }
+
+    ExportPicker {
+        id: exportPicker
+    }
+
+    CallOverlay {
+        anchors.fill: parent
+        app: rootWindow
+    }
+
+    // The screen stays on while a call rings or runs: with the screen off,
+    // Ubuntu Touch pauses the app and the call would break off.
+    ScreenSaver {
+        screenSaverEnabled: Calls.state === "" && !Calls.ringing
     }
 
     Note {

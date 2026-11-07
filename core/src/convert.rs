@@ -4,7 +4,7 @@
 use presage::libsignal_service::content::{Content, ContentBody, DataMessage};
 use presage::libsignal_service::protocol::ServiceId;
 use presage::proto::sync_message::{Content as SyncContent, Sent};
-use presage::proto::{AttachmentPointer, EditMessage, SyncMessage};
+use presage::proto::{AttachmentPointer, SyncMessage};
 use presage::store::Thread;
 
 pub struct MessageView {
@@ -89,22 +89,49 @@ pub fn deletion(content: &Content) -> Option<(Thread, u64)> {
     Some((Thread::try_from(content).ok()?, ts))
 }
 
+/// A changed version of an earlier message ("edit"). Signal keeps the
+/// original's sent timestamp as the message's id; the edit carries the new
+/// text and its own timestamp.
+pub struct EditView {
+    pub thread: Thread,
+    /// Sent timestamp of the message that was changed.
+    pub target: u64,
+    pub text: String,
+    /// When the change was made; the latest change of a message wins.
+    pub ts: u64,
+}
+
+pub fn edit(content: &Content) -> Option<EditView> {
+    let edit = match &content.body {
+        ContentBody::EditMessage(edit) => edit,
+        ContentBody::SynchronizeMessage(SyncMessage {
+            content: Some(SyncContent::Sent(Sent { edit_message: Some(edit), .. })),
+            ..
+        }) => edit,
+        _ => return None,
+    };
+    let data = edit.data_message.as_ref()?;
+    Some(EditView {
+        thread: Thread::try_from(content).ok()?,
+        target: edit.target_sent_timestamp?,
+        text: data.body.clone().unwrap_or_default(),
+        ts: data.timestamp.unwrap_or_default(),
+    })
+}
+
+/// The message itself (text, attachments, quote) of stored message contents.
+pub fn data(content: &Content) -> Option<&DataMessage> {
+    data_message(&content.body).map(|(data, _)| data)
+}
+
+/// The data message of a received message or of one sent from another of our
+/// devices (sync), and whether it is our own. Edits are left out: they change
+/// an earlier message instead of being one (see `edit`).
 fn data_message(body: &ContentBody) -> Option<(&DataMessage, bool)> {
     match body {
         ContentBody::DataMessage(data) => Some((data, false)),
-        ContentBody::EditMessage(EditMessage { data_message: Some(data), .. }) => {
-            Some((data, false))
-        }
         ContentBody::SynchronizeMessage(SyncMessage {
             content: Some(SyncContent::Sent(Sent { message: Some(data), .. })),
-            ..
-        }) => Some((data, true)),
-        ContentBody::SynchronizeMessage(SyncMessage {
-            content:
-                Some(SyncContent::Sent(Sent {
-                    edit_message: Some(EditMessage { data_message: Some(data), .. }),
-                    ..
-                })),
             ..
         }) => Some((data, true)),
         _ => None,

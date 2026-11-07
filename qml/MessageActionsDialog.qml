@@ -3,9 +3,10 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
 // What to do with a message, opened by pressing and holding it in the chat:
-// react with an emoji (👍 👎 ...), reply to it, delete it on this phone, or delete it for everyone in the
-// conversation. The latter is offered for own messages that Signal still
-// lets us delete.
+// react with an emoji (👍 👎 ...), reply to it, change its text, delete it on
+// this phone, or delete it for everyone in the conversation. Changing and
+// deleting for everyone are offered for own messages that Signal still lets
+// us change.
 Dialog {
     id: dialog
     property var app
@@ -17,9 +18,12 @@ Dialog {
     readonly property var quickReactions: ["👍", "👎", "❤️", "😂", "😮", "😢"]
 
     signal replyRequested(var message)
+    signal editRequested(var message)
 
-    // Signal only honours "delete for everyone" for recent messages.
+    // Signal only honours "delete for everyone" and edits for recent
+    // messages.
     readonly property real everyoneWindowMs: 24 * 60 * 60 * 1000
+    readonly property bool canEdit: canDeleteForEveryone && message.text.length > 0
     readonly property bool canDeleteForEveryone:
         message.outgoing === true && Date.now() - message.ts < everyoneWindowMs
 
@@ -69,6 +73,16 @@ Dialog {
             text: qsTr("Reply")
             onClicked: {
                 dialog.replyRequested(dialog.message)
+                dialog.close()
+            }
+        }
+
+        Button {
+            Layout.fillWidth: true
+            visible: dialog.canEdit
+            text: qsTr("Edit")
+            onClicked: {
+                dialog.editRequested(dialog.message)
                 dialog.close()
             }
         }

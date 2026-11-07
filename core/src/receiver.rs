@@ -11,8 +11,10 @@ use presage::model::messages::Received;
 use presage::proto::receipt_message::Type as ReceiptType;
 use presage::proto::ReceiptMessage;
 
+use crate::calls;
 use crate::commands;
 use crate::convert;
+use crate::merge;
 use crate::receipts;
 use crate::events::{message_json, State};
 use crate::files;
@@ -30,6 +32,7 @@ pub const ATTACHMENT_PREVIEW: &str = "📎";
 pub async fn receive_loop(mut manager: SignalManager, shared: Rc<Shared>) {
     let own: ServiceId = manager.registration_data().service_ids.aci().into();
     let phone = manager.registration_data().phone_number.to_string();
+    merge::merge_duplicates(&mut manager, &shared).await;
     let mut retry = FIRST_RETRY;
     loop {
         match manager.receive_messages().await {
@@ -62,7 +65,7 @@ pub async fn receive_loop(mut manager: SignalManager, shared: Rc<Shared>) {
 
 async fn on_content(
     manager: &mut SignalManager,
-    shared: &Shared,
+    shared: &Rc<Shared>,
     content: &Content,
     own: &ServiceId,
 ) {
@@ -71,8 +74,11 @@ async fn on_content(
     if let Some(pni) = content.metadata.pni_verified {
         let pni = ServiceId::from(pni);
         if shared.index.borrow().is_open_chat(&thread_key(&Thread::Contact(pni))) {
-            commands::merge_pni_thread(manager, shared, pni, content.metadata.sender).await;
+            merge::merge_pni_thread(manager, shared, pni, content.metadata.sender).await;
         }
+    }
+    if let ContentBody::CallMessage(call) = &content.body {
+        return calls::on_call_message(manager, shared, content, call).await;
     }
     if let ContentBody::ReceiptMessage(receipt) = &content.body {
         return on_receipt(shared, receipt);
@@ -81,7 +87,14 @@ async fn on_content(
         return shared.sink.emit(reaction_event(&reaction));
     }
     if let Some((thread, ts)) = convert::deletion(content) {
-        return crate::commands::forget_message(shared, &thread_key(&thread), ts);
+        return crate::messaging::forget_message(shared, &thread_key(&thread), ts);
+    }
+    if let Some(edit) = convert::edit(content) {
+        let key = thread_key(&edit.thread);
+        shared.index.borrow_mut().update_preview(&key, edit.target, &edit.text);
+        shared.sink.emit(serde_json::json!({ "ev": "edited", "thread": key,
+                                             "target": edit.target, "text": edit.text }));
+        return shared.sink.emit(crate::worker::threads_event(shared));
     }
     let Some(view) = convert::view(content, own) else {
         return;
@@ -106,6 +119,8 @@ async fn on_content(
     event["title"] = shared.index.borrow().title(&key).unwrap_or_default().into();
     shared.sink.emit(event);
     shared.sink.emit(crate::worker::threads_event(shared));
+    // A first message from someone we wrote to by phone number.
+    merge::merge_duplicates(manager, shared).await;
 
     if !view.outgoing {
         shared.unread.borrow_mut().entry(key).or_default().push((view.sender, view.ts));

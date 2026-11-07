@@ -2,6 +2,8 @@
 
 #include "messagelistmodel.h"
 
+#include <algorithm>
+
 int MessageListModel::rowCount(const QModelIndex &parent) const
 {
     return parent.isValid() ? 0 : m_entries.size();
@@ -25,6 +27,9 @@ QVariant MessageListModel::data(const QModelIndex &index, int role) const
     case QuoteOwnRole: return entry.quoteOwn;
     case StatusRole: return entry.status;
     case ReactionsRole: return entry.reactions;
+    case EditedRole: return entry.edited;
+    case CallRole: return entry.call;
+    case VideoRole: return entry.video;
     default: return {};
     }
 }
@@ -42,7 +47,10 @@ QHash<int, QByteArray> MessageListModel::roleNames() const
             {QuoteAuthorRole, "quoteAuthor"},
             {QuoteOwnRole, "quoteOwn"},
             {StatusRole, "status"},
-            {ReactionsRole, "reactions"}};
+            {ReactionsRole, "reactions"},
+            {EditedRole, "edited"},
+            {CallRole, "call"},
+            {VideoRole, "video"}};
 }
 
 MessageListModel::Entry MessageListModel::fromJson(const QJsonObject &message)
@@ -58,7 +66,15 @@ MessageListModel::Entry MessageListModel::fromJson(const QJsonObject &message)
             message.value(QStringLiteral("quoteAuthor")).toString(),
             message.value(QStringLiteral("quoteOwn")).toBool(),
             message.value(QStringLiteral("status")).toInt(),
-            message.value(QStringLiteral("reactions")).toObject().toVariantMap()};
+            message.value(QStringLiteral("reactions")).toObject().toVariantMap(),
+            message.value(QStringLiteral("edited")).toBool(),
+            message.value(QStringLiteral("call")).toString(),
+            message.value(QStringLiteral("video")).toBool()};
+}
+
+qint64 MessageListModel::tsAt(int row) const
+{
+    return row >= 0 && row < m_entries.size() ? m_entries.at(row).ts : 0;
 }
 
 void MessageListModel::reset(const QJsonArray &messages)
@@ -67,6 +83,9 @@ void MessageListModel::reset(const QJsonArray &messages)
     m_entries.clear();
     for (const QJsonValue &value : messages)
         m_entries.append(fromJson(value.toObject()));
+    // Oldest first, so the newest message is at the bottom of the chat.
+    std::stable_sort(m_entries.begin(), m_entries.end(),
+                     [](const Entry &a, const Entry &b) { return a.ts < b.ts; });
     endResetModel();
 }
 
@@ -76,7 +95,8 @@ void MessageListModel::append(const QJsonObject &message)
     // A message can arrive twice when the history request and a live event
     // overlap; Signal identifies messages by their sent timestamp.
     for (const Entry &existing : m_entries) {
-        if (existing.ts == entry.ts && existing.outgoing == entry.outgoing)
+        if (existing.ts == entry.ts && existing.outgoing == entry.outgoing
+                && existing.call == entry.call)
             return;
     }
     beginInsertRows(QModelIndex(), m_entries.size(), m_entries.size());
@@ -124,6 +144,20 @@ void MessageListModel::setReaction(qint64 target, const QString &reactor,
             entry.reactions.insert(reactor, emoji);
         const QModelIndex changed = index(row);
         emit dataChanged(changed, changed, {ReactionsRole});
+        return;
+    }
+}
+
+void MessageListModel::setEdited(qint64 target, const QString &text)
+{
+    for (int row = 0; row < m_entries.size(); ++row) {
+        Entry &entry = m_entries[row];
+        if (entry.ts != target)
+            continue;
+        entry.text = text;
+        entry.edited = true;
+        const QModelIndex changed = index(row);
+        emit dataChanged(changed, changed, {TextRole, EditedRole});
         return;
     }
 }

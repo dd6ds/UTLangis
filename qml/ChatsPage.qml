@@ -24,12 +24,6 @@ Page {
             Accessible.name: Signal.state === "online" ? qsTr("Connected") : qsTr("Not connected")
         }
         ToolButton {
-            text: "+"
-            font.pixelSize: page.app.fontTitle
-            Accessible.name: qsTr("New chat")
-            onClicked: newChatDialog.open()
-        }
-        ToolButton {
             text: "⚙"
             font.pixelSize: page.app.fontTitle
             Accessible.name: qsTr("Settings")
@@ -56,7 +50,35 @@ Page {
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.Wrap
         color: page.app.colorSecondaryText
-        text: qsTr("No chats yet. Tap + to write to a phone number.")
+        text: qsTr("No chats yet. Tap ✎ to start one.")
+    }
+
+    // New chat, round button at the bottom right as in Signal.
+    RoundButton {
+        id: newChatButton
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: page.app.spacingUnit * 1.5
+        implicitWidth: page.app.gu * 7
+        implicitHeight: implicitWidth
+        text: "✎"
+        font.pixelSize: page.app.fontTitle * 1.2
+        palette.buttonText: "#ffffff"
+        Accessible.name: qsTr("New chat")
+        background: Rectangle {
+            radius: width / 2
+            color: newChatButton.down ? Qt.darker(page.app.colorAccent, 1.2)
+                                      : page.app.colorAccent
+            // A soft shadow below the button.
+            Rectangle {
+                z: -1
+                anchors.fill: parent
+                anchors.topMargin: page.app.gu * 0.4
+                radius: width / 2
+                color: "#40000000"
+            }
+        }
+        onClicked: newChatDialog.open()
     }
 
     NewChatDialog {

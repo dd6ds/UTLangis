@@ -12,6 +12,9 @@
 #include <QtWebEngine>
 
 #include "languagemanager.h"
+#include "callengine.h"
+#include "imageeditor.h"
+#include "remotevideo.h"
 #include "signalclient.h"
 #include "systemtheme.h"
 #include "voicenotes.h"
@@ -47,6 +50,10 @@ static SignalClient *exposeBackend(QQmlApplicationEngine &engine)
     qmlRegisterUncreatableType<MessageListModel>(
         "UTLangis", 1, 0, "MessageListModel", QStringLiteral("Provided by Signal.messages"));
     engine.rootContext()->setContextProperty(QStringLiteral("Signal"), client);
+    auto *calls = new CallEngine(client, &engine);
+    engine.rootContext()->setContextProperty(QStringLiteral("Calls"), calls);
+    RemoteVideo::engine = calls;
+    qmlRegisterType<RemoteVideo>("UTLangis", 1, 0, "RemoteVideo");
     // Installs the translation before the first page is created.
     engine.rootContext()->setContextProperty(QStringLiteral("Language"),
                                              new LanguageManager(&engine, &engine));
@@ -55,6 +62,12 @@ static SignalClient *exposeBackend(QQmlApplicationEngine &engine)
             QStandardPaths::GenericCacheLocation) + QStringLiteral("/utlangis/voice");
     engine.rootContext()->setContextProperty(QStringLiteral("Voice"),
                                              new VoiceNotes(recordDir, &engine));
+    // Turned and cropped photos wait there until they are sent.
+    engine.rootContext()->setContextProperty(
+            QStringLiteral("ImageEditor"),
+            new ImageEditor(QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)
+                                    + QStringLiteral("/utlangis/edited"),
+                            &engine));
     engine.rootContext()->setContextProperty(QStringLiteral("SystemTheme"),
                                              new SystemTheme(&engine));
     engine.rootContext()->setContextProperty(QStringLiteral("gridUnitPx"), gridUnitPx());

@@ -14,21 +14,41 @@
 //! - `react` {thread, ts, author, emoji, remove}: react to a message
 //! - `renameThread` {thread, name}: own name for a chat ("" = profile name)
 //! - `markRead` {thread, readReceipts}: also tells the senders (if allowed)
+//! - `editMessage` {thread, ts, text}: change the text of a sent message
 //! - `deleteMessage` {thread, ts, everyone}: delete for this phone, or for all
+//! - `scanQr` {path}: look for a linking QR code in a camera photo
+//! - `linkDevice` {url}, `devices`, `unlinkDevice` {id}: other devices of the
+//!   account (primary device only)
+//! - `declineCall` {callId}: decline a ringing call
+//! - `sendCallSignal` {signal}, `turnServers`, `callAnswered` {callId},
+//!   `callStarted` {thread, video}: calls run by libutlangis_calls
+//! - `mergeChats` {from, to}: join a phone number chat into the person's chat
 //! - `reconnect`: reopen the message connection (after the app was suspended)
 //!
 //! Events (JSON objects with an "ev" field): `state`, `error`, `threads`,
 //! `history`, `message`, `sent`, `resolved`, `deleted` {thread, ts},
 //! `receipt` {ts: [..], status}, `merged` {from, to},
 //! `reaction` {thread, target, reactor, emoji, remove}, `linkQr` {path},
-//! `account` {linked}. Their fields are built in
-//! worker.rs and events.rs.
+//! `account` {linked}, `edited` {thread, target, text}, `qrScanned` {text},
+//! `qrNone`, `deviceLinked`, `devices` {devices},
+//! `incomingCall` {thread, title, callId, video}, `callSignal` (a received
+//! call signalling message for RingRTC), `turnServers` {servers},
+//! `call` (a call row with
+//! `call` = how it ended, `title`, `callId` if it rang here). Their fields are built in
+//! worker.rs, events.rs and devices.rs.
 
+mod calls;
+mod callsignal;
 mod commands;
 mod convert;
+mod devices;
 mod events;
 mod files;
+mod history;
 mod linking;
+mod merge;
+mod messaging;
+mod outgoing;
 mod qr;
 mod receipts;
 mod receiver;

@@ -33,6 +33,12 @@ public:
         StatusRole,
         // Reactions as { reactor: emoji }; "me" is our own.
         ReactionsRole,
+        // The text was changed after sending.
+        EditedRole,
+        // A call instead of a message: how it ended ("missed", "declined",
+        // "answeredElsewhere", "declinedElsewhere"); "" for messages.
+        CallRole,
+        VideoRole,
     };
 
     using QAbstractListModel::QAbstractListModel;
@@ -49,7 +55,12 @@ public:
     void setStatus(const QJsonArray &timestamps, int status);
     // Sets or (remove) clears one person's reaction to the message `target`.
     void setReaction(qint64 target, const QString &reactor, const QString &emoji, bool remove);
+    // Shows the new text of the message `target` after an edit.
+    void setEdited(qint64 target, const QString &text);
     void clear();
+    // Sent time of the message in `row` (0 if there is none), for the day
+    // headers between messages.
+    Q_INVOKABLE qint64 tsAt(int row) const;
 
 private:
     struct Entry {
@@ -65,6 +76,9 @@ private:
         bool quoteOwn = false;
         int status = 0;
         QVariantMap reactions;
+        bool edited = false;
+        QString call;
+        bool video = false;
     };
     static Entry fromJson(const QJsonObject &message);
 

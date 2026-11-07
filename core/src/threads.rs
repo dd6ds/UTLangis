@@ -147,6 +147,16 @@ impl ThreadIndex {
         self.save();
     }
 
+    /// Shows the new text if the preview is the changed message `ts`.
+    pub fn update_preview(&mut self, key: &str, ts: u64, text: &str) {
+        if let Some(entry) = self.threads.get_mut(key) {
+            if entry.last_ts == ts && !text.is_empty() {
+                entry.last_text = text.to_owned();
+                self.save();
+            }
+        }
+    }
+
     /// Clears the preview if it shows the deleted message with timestamp `ts`.
     pub fn forget_preview(&mut self, key: &str, ts: u64) {
         if let Some(entry) = self.threads.get_mut(key) {
@@ -164,6 +174,40 @@ impl ThreadIndex {
                 self.save();
             }
         }
+    }
+
+    /// Chats started with a phone number identity (PNI) next to a chat
+    /// with an account id (ACI) of the same name: the same person, whose
+    /// reply did not prove the link (see merge.rs). Names are
+    /// compared without case, spaces and punctuation ("Jose Andres" is
+    /// "joseandres"); a name that fits several chats is left alone.
+    pub fn duplicate_pairs(&self) -> Vec<(ServiceId, ServiceId)> {
+        let name_key = |title: &str| -> String {
+            title.chars().filter(|c| c.is_alphanumeric()).flat_map(char::to_lowercase).collect()
+        };
+        let open = || self.threads.iter().filter(|(_, t)| t.merged_into.is_none());
+        let mut pairs = Vec::new();
+        for (pni_key, pni) in open().filter(|(key, _)| key.starts_with("c:PNI:")) {
+            let name = name_key(&pni.title);
+            if name.is_empty() {
+                continue;
+            }
+            let matches: Vec<&String> = open()
+                .filter(|(key, t)| {
+                    key.starts_with("c:") && !key.starts_with("c:PNI:")
+                        && name_key(&t.title) == name
+                })
+                .map(|(key, _)| key)
+                .collect();
+            if let [aci_key] = matches[..] {
+                if let (Some(Thread::Contact(from)), Some(Thread::Contact(to))) =
+                    (parse_thread_key(pni_key), parse_thread_key(aci_key))
+                {
+                    pairs.push((from, to));
+                }
+            }
+        }
+        pairs
     }
 
     /// All conversations, newest first.

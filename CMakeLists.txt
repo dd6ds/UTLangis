@@ -21,6 +21,8 @@ find_package(Qt5 COMPONENTS Core Gui Qml Quick DBus WebEngine REQUIRED)
 # GStreamer: recording and playing voice messages (src/voicenotes.cpp).
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED IMPORTED_TARGET gstreamer-1.0)
+# PulseAudio: earpiece / loudspeaker during calls (src/callaudio.cpp).
+pkg_check_modules(PULSE REQUIRED IMPORTED_TARGET libpulse)
 
 # ---------------------------------------------------------------------------
 # Rust backend (core/): built by cargo as a static library for the target the
@@ -81,6 +83,30 @@ add_custom_command(
 add_custom_target(utlangis_core DEPENDS ${RUST_CORE_LIB})
 
 # ---------------------------------------------------------------------------
+# Calls: libutlangis_calls.so on Signal's RingRTC and prebuilt WebRTC for
+# linux-arm64 (calls/build-calls.sh fetches both). A library of its own,
+# loaded at run time (src/callengine.cpp); WebRTC's BoringSSL stays inside it.
+# ---------------------------------------------------------------------------
+option(UTLANGIS_CALLS "Build the call library (arm64 only)" ON)
+if(UTLANGIS_CALLS)
+    set(CALLS_LIB ${CMAKE_BINARY_DIR}/calls/libutlangis_calls.so)
+    file(GLOB CALLS_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/calls/src/*.rs)
+    add_custom_command(
+        OUTPUT ${CALLS_LIB}
+        COMMAND ${CMAKE_COMMAND} -E env --unset=MAKEFLAGS --unset=MFLAGS
+                CARGO_HOME=${CMAKE_BINARY_DIR}/cargo-home
+                ${CMAKE_CURRENT_SOURCE_DIR}/calls/build-calls.sh
+                ${CMAKE_BINARY_DIR}/ringrtc-work ${CMAKE_BINARY_DIR}/calls
+        DEPENDS ${CALLS_SOURCES}
+                ${CMAKE_CURRENT_SOURCE_DIR}/calls/Cargo.toml
+                ${CMAKE_CURRENT_SOURCE_DIR}/calls/build-calls.sh
+        COMMENT "Building the call library (RingRTC)"
+        USES_TERMINAL)
+    add_custom_target(utlangis_calls ALL DEPENDS ${CALLS_LIB})
+    install(FILES ${CALLS_LIB} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+endif()
+
+# ---------------------------------------------------------------------------
 # Translations: i18n/utlangis_<lang>.ts -> .qm, embedded as :/i18n/*.qm.
 # ---------------------------------------------------------------------------
 find_package(Qt5LinguistTools REQUIRED)
@@ -97,10 +123,18 @@ file(WRITE ${UTLANGIS_I18N_QRC}
 add_custom_target(utlangis_translations DEPENDS ${UTLANGIS_QM_FILES})
 
 add_executable(utlangis
+    src/callaudio.cpp
+    src/callaudio.h
+    src/callengine.cpp
+    src/callengine.h
+    src/imageeditor.cpp
+    src/imageeditor.h
     src/languagemanager.cpp
     src/languagemanager.h
     src/main.cpp
     src/messagelistmodel.cpp
+    src/remotevideo.cpp
+    src/remotevideo.h
     src/messagelistmodel.h
     src/notifier.cpp
     src/notifier.h
@@ -120,12 +154,13 @@ add_dependencies(utlangis utlangis_translations utlangis_core)
 
 target_include_directories(utlangis PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/core/include)
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/calls/include)
 
 # The Rust static library needs pthread, dl and libm from the system, and
 # libstdc++ for the C++ parts of BoringSSL (already linked for Qt).
 target_link_libraries(utlangis
-    Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick Qt5::DBus Qt5::WebEngine PkgConfig::GSTREAMER
+    Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick Qt5::DBus Qt5::WebEngine PkgConfig::GSTREAMER PkgConfig::PULSE
     ${RUST_CORE_LIB} pthread dl m)
 
 install(TARGETS utlangis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

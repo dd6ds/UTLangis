@@ -54,6 +54,29 @@ Page {
                 onClicked: profileDialog.open()
             }
 
+            Button {
+                Layout.fillWidth: true
+                visible: !Signal.linked
+                text: qsTr("Linked devices (e.g. Signal Desktop)")
+                onClicked: page.app.stack.push(Qt.resolvedUrl("LinkedDevicesPage.qml"),
+                                               { app: page.app })
+            }
+
+            Switch {
+                id: shutterSwitch
+                Layout.fillWidth: true
+                visible: !Signal.linked
+                text: qsTr("Camera sound when scanning QR codes")
+                checked: page.app.settings.shutterSound
+                onToggled: page.app.settings.shutterSound = checked
+                contentItem: AppLabel {
+                    leftPadding: shutterSwitch.indicator.width + shutterSwitch.spacing
+                    text: shutterSwitch.text
+                    wrapMode: Text.Wrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
             Switch {
                 id: notifySwitch
                 Layout.fillWidth: true
@@ -66,6 +89,26 @@ Page {
                     wrapMode: Text.Wrap
                     verticalAlignment: Text.AlignVCenter
                 }
+            }
+
+            GainSlider {
+                Layout.fillWidth: true
+                app: page.app
+                title: qsTr("Microphone gain (voice messages and calls)")
+                from: Voice.micGainMinDb
+                to: Voice.micGainMaxDb
+                value: Voice.micGainDb
+                onValueRequested: Voice.micGainDb = value
+            }
+
+            GainSlider {
+                Layout.fillWidth: true
+                app: page.app
+                title: qsTr("Volume of voice messages")
+                from: 0
+                to: Voice.playbackGainMaxDb
+                value: Voice.playbackGainDb
+                onValueRequested: Voice.playbackGainDb = value
             }
 
             AppLabel {

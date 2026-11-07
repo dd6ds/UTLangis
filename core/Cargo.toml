@@ -12,15 +12,21 @@ name = "utlangis_core"
 crate-type = ["staticlib"]
 
 [dependencies]
+base64 = "0.22"
 # Pinned: libsignal-service follows Signal's server changes closely, so a
 # moving branch would make builds non-reproducible.
-presage = { git = "https://github.com/whisperfish/presage", rev = "aeaedf99babebae2dbc6b86bca797807d4cd9fda", features = ["cdsi"] }
-presage-store-sqlite = { git = "https://github.com/whisperfish/presage", rev = "aeaedf99babebae2dbc6b86bca797807d4cd9fda", features = ["cdsi"] }
+presage = { git = "https://github.com/whisperfish/presage", rev = "4b81740610c301cbd54d95f4dbd4cadd692af95e", features = ["cdsi"] }
+presage-store-sqlite = { git = "https://github.com/whisperfish/presage", rev = "4b81740610c301cbd54d95f4dbd4cadd692af95e", features = ["cdsi"] }
 
 futures = "0.3"
 hex = "0.4"
 mime_guess = "2.0"
 qrcode = { version = "0.14", default-features = false }
+# Reading the linking QR code of Signal Desktop from a camera photo.
+image = { version = "0.25", default-features = false, features = ["jpeg"] }
+rqrr = "0.9"
+rxing = { version = "0.8", default-features = false, features = ["encoding_rs"] }
+url = "2.5"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.48", features = ["rt", "sync", "time", "macros"] }
@@ -30,6 +36,15 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 [patch.crates-io]
 # Same patch as the presage workspace: SQLCipher support used by its store.
 libsqlite3-sys = { version = "0.36.0", git = "https://github.com/whisperfish/rusqlite", rev = "2a42b3354c9194700d08aa070f70a131a470e7dc" }
+
+# libsignal-service-rs at 7a7526741dfd9ad4c4894717f22651eb0506fb7e (the revision
+# presage uses), with one change in src/cipher.rs (verify_pni_signature): the PNI
+# of a PniSignatureMessage is also accepted as 16 raw UUID bytes, the way
+# Signal's apps send it. Otherwise every PNI signature is ignored and a chat
+# started with a phone number never joins the chat of the person's replies.
+# Drop the copy once upstream parses that form.
+[patch."https://github.com/whisperfish/libsignal-service-rs"]
+libsignal-service = { path = "vendor/libsignal-service-rs" }
 
 [profile.release]
 lto = "thin"

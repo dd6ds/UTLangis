@@ -6,21 +6,39 @@
     <file>qml/CaptchaPage.qml</file>
     <file>qml/ChatsPage.qml</file>
     <file>qml/ThreadRow.qml</file>
+    <file>qml/Avatar.qml</file>
+    <file>qml/GainSlider.qml</file>
+    <file>qml/LevelMeter.qml</file>
+    <file>qml/MediaActionBar.qml</file>
     <file>qml/NewChatDialog.qml</file>
     <file>qml/ContactImportPicker.qml</file>
     <file>qml/NumberChoiceDialog.qml</file>
     <file>qml/ProfileDialog.qml</file>
     <file>qml/ChatPage.qml</file>
     <file>qml/MessageBubble.qml</file>
+    <file>qml/CallRow.qml</file>
+    <file>qml/DayHeader.qml</file>
+    <file>qml/VoiceRecorderBar.qml</file>
+    <file>qml/IncomingCallDialog.qml</file>
+    <file>qml/CallOverlay.qml</file>
     <file>qml/MessageActionsDialog.qml</file>
     <file>qml/QuoteView.qml</file>
     <file>qml/EmojiPicker.qml</file>
     <file>qml/emojis.js</file>
+    <file>qml/linkify.js</file>
     <file>qml/RenameDialog.qml</file>
+    <file>qml/MergeChatDialog.qml</file>
     <file>qml/AttachmentView.qml</file>
+    <file>qml/ImageGroup.qml</file>
+    <file>qml/ZoomableImage.qml</file>
     <file>qml/ImageViewerPage.qml</file>
+    <file>qml/VideoPlayerPage.qml</file>
+    <file>qml/ExportPicker.qml</file>
+    <file>qml/CropPage.qml</file>
     <file>qml/ImportPicker.qml</file>
     <file>qml/SettingsPage.qml</file>
+    <file>qml/LinkedDevicesPage.qml</file>
+    <file>qml/ScanQrPage.qml</file>
     <file>qml/AppHeader.qml</file>
     <file>qml/AppLabel.qml</file>
     <file>qml/AppField.qml</file>

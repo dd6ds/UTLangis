@@ -30,6 +30,9 @@ class SignalClient : public QObject
     // Tell senders when their messages were read (Settings).
     Q_PROPERTY(bool sendReadReceipts READ sendReadReceipts WRITE setSendReadReceipts
                NOTIFY sendReadReceiptsChanged)
+    // Other devices of the account: [{ id, name, lastSeen, self }], filled
+    // by refreshDevices().
+    Q_PROPERTY(QVariantList devices READ devices NOTIFY devicesChanged)
     Q_PROPERTY(ThreadListModel *threads READ threads CONSTANT)
     Q_PROPERTY(MessageListModel *messages READ messages CONSTANT)
 
@@ -45,6 +48,7 @@ public:
     QString currentThread() const { return m_currentThread; }
     QString currentTitle() const;
     bool sendReadReceipts() const { return m_sendReadReceipts; }
+    QVariantList devices() const { return m_devices; }
     void setSendReadReceipts(bool send);
     ThreadListModel *threads() { return &m_threads; }
     MessageListModel *messages() { return &m_messages; }
@@ -66,6 +70,9 @@ public:
     // Reads a contact picked in the Contacts app (vCard file URL from the
     // Content Hub) as { name, numbers: [..] }.
     Q_INVOKABLE QVariantMap readContactCard(const QString &url) const;
+    // Changes the text of an own message of the open chat (ts = its sent
+    // time).
+    Q_INVOKABLE void editMessage(qint64 ts, const QString &text);
     // Deletes a message of the open chat (ts = its sent time); `everyone`
     // also asks the other side(s) to delete it.
     Q_INVOKABLE void deleteMessage(qint64 ts, bool everyone);
@@ -76,6 +83,24 @@ public:
     Q_INVOKABLE void renameThread(const QString &name);
     // name: from the Contacts app, "" for a typed number.
     Q_INVOKABLE void startChat(const QString &phone, const QString &name);
+    // Where the QR scanner stores a camera photo for scanQr().
+    Q_INVOKABLE QString qrPhotoPath() const;
+    // Looks for a Signal linking QR code in a camera photo: qrScanned or
+    // qrNotFound follows. The photo is removed.
+    Q_INVOKABLE void scanQr(const QString &path);
+    // Links another device (Signal Desktop) by the address of its QR code.
+    Q_INVOKABLE void linkDevice(const QString &url);
+    Q_INVOKABLE void refreshDevices();
+    Q_INVOKABLE void unlinkDevice(int id);
+    // Calls (CallEngine): signalling out, TURN servers, call log.
+    void sendCallSignal(const QJsonObject &signal);
+    void requestTurnServers();
+    void callAnswered(const QString &callId);
+    void callStarted(const QString &thread, bool video);
+    // Joins the phone number chat `from` into the person's chat `to`.
+    Q_INVOKABLE void mergeChats(const QString &from, const QString &to);
+    // Declines the ringing call `callId` (from incomingCall).
+    Q_INVOKABLE void declineCall(const QString &callId);
     // Called when the app comes back from being suspended.
     void reconnect();
 
@@ -84,6 +109,18 @@ signals:
     void busyChanged();
     void currentThreadChanged();
     void sendReadReceiptsChanged();
+    void devicesChanged();
+    void qrScanned(const QString &text);
+    void qrNotFound();
+    void deviceLinked();
+    // Someone calls us; answering is not possible yet.
+    void incomingCall(const QString &callId, const QString &thread, const QString &title,
+                      bool video);
+    // The call `callId` stopped ringing (hung up, answered elsewhere, ...).
+    void callEnded(const QString &callId);
+    // A received call signalling message for RingRTC (see core calls.rs).
+    void callSignal(const QJsonObject &signal);
+    void turnServersReceived(const QJsonArray &servers, int localDeviceId);
     // action: the command that failed; kind: short code QML translates.
     void errorOccurred(const QString &action, const QString &kind, const QString &message);
     void chatStarted(const QString &thread);
@@ -112,6 +149,8 @@ private:
     bool m_busy = false;
     bool m_started = false;
     bool m_sendReadReceipts = true;
+    QVariantList m_devices;
+    QString m_dataDir;
 };
 
 #endif

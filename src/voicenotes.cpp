@@ -6,7 +6,9 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QSettings>
 #include <QUrl>
+#include <QtMath>
 
 #include <gst/gst.h>
 
@@ -14,9 +16,26 @@ namespace {
 
 // Signal's Android app sends voice messages as AAC in an ADTS stream with
 // the content type audio/aac; recipients on every platform can play that.
+// %1 is the microphone gain as a linear factor; `level` reports the peak
+// for the level meter ten times a second.
 const char *const kRecordPipeline =
         "pulsesrc ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=1 "
+        "! volume volume=%1 ! level interval=100000000 post-messages=true "
         "! voaacenc bitrate=32000 ! audio/mpeg,stream-format=adts ! filesink name=sink";
+// Phone microphones record voice rather quietly; this is a good start.
+const int kDefaultMicGainDb = 12;
+const int kMicGainMinDb = -10;
+const int kMicGainMaxDb = 30;
+// playbin's volume goes up to 10 (+20 dB).
+const int kPlaybackGainMaxDb = 20;
+const char *const kMicGainKey = "voice/micGainDb";
+const char *const kPlaybackGainKey = "voice/playbackGainDb";
+const qreal kSilenceDb = -60;
+
+double factorOf(int db)
+{
+    return qPow(10.0, db / 20.0);
+}
 const char *const kRecordPrefix = "voice-";
 const char *const kRecordSuffix = ".aac";
 // Shorter recordings are taken as an accidental tap and dropped.
@@ -74,10 +93,75 @@ VoiceNotes::VoiceNotes(const QString &recordDir, QObject *parent)
             emit failed(error);
             return;
         }
+        pollLevel();
         emit recordedMsChanged();
     });
     m_playTicker.setInterval(kTickMs);
     connect(&m_playTicker, &QTimer::timeout, this, &VoiceNotes::pollPlayer);
+
+    QSettings settings;
+    m_micGainDb = qBound(kMicGainMinDb,
+                         settings.value(QLatin1String(kMicGainKey), kDefaultMicGainDb).toInt(),
+                         kMicGainMaxDb);
+    m_playbackGainDb = qBound(0, settings.value(QLatin1String(kPlaybackGainKey), 0).toInt(),
+                              kPlaybackGainMaxDb);
+}
+
+int VoiceNotes::micGainMinDb() const { return kMicGainMinDb; }
+int VoiceNotes::micGainMaxDb() const { return kMicGainMaxDb; }
+int VoiceNotes::playbackGainMaxDb() const { return kPlaybackGainMaxDb; }
+
+// Applies to the next recording.
+void VoiceNotes::setMicGainDb(int db)
+{
+    db = qBound(kMicGainMinDb, db, kMicGainMaxDb);
+    if (db == m_micGainDb)
+        return;
+    m_micGainDb = db;
+    QSettings().setValue(QLatin1String(kMicGainKey), db);
+    emit micGainDbChanged();
+}
+
+void VoiceNotes::setPlaybackGainDb(int db)
+{
+    db = qBound(0, db, kPlaybackGainMaxDb);
+    if (db == m_playbackGainDb)
+        return;
+    m_playbackGainDb = db;
+    QSettings().setValue(QLatin1String(kPlaybackGainKey), db);
+    if (m_player)
+        g_object_set(m_player, "volume", factorOf(db), nullptr);
+    emit playbackGainDbChanged();
+}
+
+// Takes the peaks the `level` element posted since the last tick.
+void VoiceNotes::pollLevel()
+{
+    if (!m_recorder)
+        return;
+    GstBus *bus = gst_element_get_bus(m_recorder);
+    qreal peak = kSilenceDb;
+    bool any = false;
+    while (GstMessage *message = gst_bus_pop_filtered(bus, GST_MESSAGE_ELEMENT)) {
+        const GstStructure *structure = gst_message_get_structure(message);
+        if (structure && gst_structure_has_name(structure, "level")) {
+            const GValue *list = gst_structure_get_value(structure, "peak");
+            G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+            GValueArray *values = list ? static_cast<GValueArray *>(g_value_get_boxed(list))
+                                       : nullptr;
+            if (values && values->n_values > 0) {
+                peak = qMax(peak, g_value_get_double(g_value_array_get_nth(values, 0)));
+                any = true;
+            }
+            G_GNUC_END_IGNORE_DEPRECATIONS
+        }
+        gst_message_unref(message);
+    }
+    gst_object_unref(bus);
+    if (any) {
+        m_levelDb = qBound(kSilenceDb, peak, 0.0);
+        emit levelChanged();
+    }
 }
 
 VoiceNotes::~VoiceNotes()
@@ -97,7 +181,9 @@ bool VoiceNotes::startRecording()
         return true;
     stopPlaying();
     GError *error = nullptr;
-    m_recorder = gst_parse_launch(kRecordPipeline, &error);
+    const QByteArray pipeline = QString::fromLatin1(kRecordPipeline)
+            .arg(QString::number(factorOf(m_micGainDb), 'f', 4)).toLatin1();
+    m_recorder = gst_parse_launch(pipeline.constData(), &error);
     if (!m_recorder) {
         const QString text = QString::fromUtf8(error ? error->message : "pipeline");
         g_clear_error(&error);
@@ -142,6 +228,8 @@ void VoiceNotes::finishRecording()
         gst_message_unref(message);
     gst_object_unref(bus);
     destroy(m_recorder);
+    m_levelDb = kSilenceDb;
+    emit levelChanged();
     emit recordingChanged();
     emit recordedMsChanged();
 }
@@ -184,6 +272,7 @@ void VoiceNotes::togglePlay(const QString &path)
     }
     const QByteArray uri = QUrl::fromLocalFile(path).toEncoded();
     g_object_set(m_player, "uri", uri.constData(), nullptr);
+    g_object_set(m_player, "volume", factorOf(m_playbackGainDb), nullptr);
     if (gst_element_set_state(m_player, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
         const QString text = pendingError(m_player);
         destroy(m_player);

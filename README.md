@@ -9,8 +9,9 @@ can be **linked** to the account of another phone by QR code, like Signal
 Desktop.
 
 The Signal protocol work is done by [presage](https://github.com/whisperfish/presage)
-(Rust, on top of Signal's own `libsignal`). The user interface is Qt 5.12 /
-QML, like the other ubTouch apps.
+(Rust, on top of Signal's own `libsignal`); calls run on Signal's own call
+library [RingRTC](https://github.com/signalapp/ringrtc) (WebRTC). The user
+interface is Qt 5.12 / QML, like the other ubTouch apps.
 
 | Chats | New chat | Settings |
 | :---: | :---: | :---: |
@@ -24,10 +25,29 @@ Names and numbers in the screenshots are placeholders.
   voice-call code, or linking as an additional device of an existing account
   by scanning a QR code with the Signal app on another phone
 - Profile name
+- Link Signal Desktop (or another device) to UT Langis when it is the
+  primary device: Settings → Linked devices → scan the QR code Signal
+  Desktop shows; linked devices are listed and can be unlinked
+- Calls with one person, audio and video (📞 / 🎥 in the chat): answer or
+  decline incoming calls (with ringtone), earpiece or loudspeaker, microphone
+  and camera on/off; the screen stays on during a call. Calls show up as rows
+  in the chat (missed, declined, answered, on another device). Group calls
+  are not supported.
 - One-to-one and group chats: receive, send text and photos
-- Images open full screen with a tap; pinch or double-tap to zoom
+- Chat look close to Signal's: avatars with initials, day headers, rounded
+  bubbles, an input bar with a send / record button
+- Several images of a message are grouped as tiles in the bubble; a tap
+  opens them full screen, swipe left/right to go through them, pinch or
+  double-tap to zoom; from there react to or reply to the message, save the
+  image (⤓) or crop it (✂) to send the cut-out
+- Crop and turn a photo before sending it (✂ above the input field)
+- Videos play in the app (tap the tile); other files open or save with
+  another app (⤓)
+- Web addresses in messages are links that open in the browser
 - Emoji panel in the chat (😊), with recently used emoji
-- Voice messages: record (🎤) and play, AAC like Signal's own apps
+- Voice messages: record (🎤) with a level meter, listen to them before
+  sending, and play; AAC like Signal's own apps. Microphone gain and the
+  volume of voice messages are set in the settings.
 - Delivery state of own messages: ✓ sent, ✓✓ delivered, green ✓✓ read;
   UT Langis confirms delivery and (optionally, Settings) reading in return
 - Rename a one-to-one chat (✎), e.g. for someone not in the address book;
@@ -36,11 +56,17 @@ Names and numbers in the screenshots are placeholders.
   also those from others; tap your reaction again to take it back
 - Reply to a message (press and hold → Reply): the reply carries a quote
   of it, as in Signal's own apps
+- Edit own messages (press and hold → Edit) within 24 hours of sending; they
+  are marked "edited", here and in Signal's own apps, and edits by others
+  are shown too
 - Delete messages (press and hold): for this phone, or for everyone within
   24 hours of sending; deletions by others are applied too
 - New chats by phone number or with a contact picked in the Contacts app
   (the app sees only that contact; Signal contact discovery is only asked
-  about the chosen number)
+  about the chosen number). When the person's replies arrive in a second
+  chat (Signal knows them by their account, not their number), both chats
+  are joined: automatically if they have the same name, or with ⇄ in the
+  chat
 - Conversation list with unread counts, notifications while the app runs:
   sound selectable (phone default, silent, any of the phone's notification
   sounds), off for all chats or muted per chat (🔔/🔕 in the chat)
@@ -48,8 +74,7 @@ Names and numbers in the screenshots are placeholders.
 - English, German, French, Spanish and Italian; follows the phone's language
   or a language chosen in the settings
 
-Not (yet) included: calls, stories, registration lock PIN, linking further
-devices (Signal Desktop) to UT Langis when it is the primary device.
+Not (yet) included: group calls, stories, registration lock PIN.
 
 ## Installation
 
@@ -97,7 +122,7 @@ anyone with your screen code and a USB cable has a shell on the phone.
 ### With adb
 
 ```bash
-CLICK=utlangis_0.3.0_arm64.click      # the file you downloaded or built
+CLICK=utlangis_0.3.3_arm64.click      # the file you downloaded or built
 
 adb push "$CLICK" /home/phablet/
 adb shell gdbus call --system --dest com.lomiri.click \
@@ -189,6 +214,19 @@ and a current `protoc` to its container image (see `clickable.yaml`), and
 cargo then compiles libsignal and BoringSSL for arm64. Later builds only
 recompile what changed. Cargo's downloads and output live in `build/`.
 
+The call library `libutlangis_calls.so` is built by `calls/build-calls.sh`
+(called from CMake): it fetches the RingRTC sources (a fixed tag) and Signal's
+prebuilt WebRTC for linux-arm64 (checked against its SHA-256) into
+`build/…/ringrtc-work/`, and builds the `calls/` crate inside RingRTC's
+workspace, so RingRTC's `Cargo.lock` applies. It is a library of its own,
+loaded at run time, because WebRTC brings its own BoringSSL, which must not
+meet the one of the Signal backend. `cmake -DUTLANGIS_CALLS=OFF` builds the
+app without calls.
+
+`core/vendor/libsignal-service-rs` is a copy of presage's libsignal-service
+with one fix (see the comment in `core/Cargo.toml`); it replaces the
+upstream crate through `[patch]` until upstream has the fix.
+
 `core/` can also be built on the development machine for a quick check:
 
 ```bash
@@ -225,13 +263,26 @@ core/                 Rust backend (static library with a C interface)
   src/lib.rs          C functions, command and event format
   src/worker.rs       backend thread, registration, receive loop start
   src/receiver.rs     receive loop and incoming messages
-  src/commands.rs     send, history, contact lookup, profile
+  src/commands.rs     commands from the app, contact lookup, profile
+  src/messaging.rs    sending messages, reactions, deletions
+  src/outgoing.rs     delivery to chats and groups, edits
+  src/history.rs      the stored messages of a chat
+  src/calls.rs        ringing calls and the call log (calls.json)
+  src/callsignal.rs   call signalling between Signal and the call library
+  src/merge.rs        joining a phone number chat with the person's chat
+  src/devices.rs      linked devices (QR code of Signal Desktop)
   src/convert.rs      Signal contents -> message rows
   src/threads.rs      conversation list (threads.json)
   src/titles.rs       contact and group names
   src/files.rs        attachments on the phone
+  vendor/             patched copy of libsignal-service-rs
+calls/                call library on RingRTC (libutlangis_calls.so)
+  build-calls.sh      fetches RingRTC and WebRTC, builds the library
+  include/utlangis_calls.h  its C interface
 src/                  C++: SignalClient (bridge), list models, notifications,
-                      LanguageManager, VoiceNotes (GStreamer recording/playback)
+                      LanguageManager, VoiceNotes (GStreamer recording/playback),
+                      CallEngine / CallAudio / RemoteVideo (calls),
+                      ImageEditor (crop and turn photos)
 qml/                  pages and components
 i18n/                 translations
 ```
@@ -239,7 +290,9 @@ i18n/                 translations
 ## Data on the phone
 
 Everything lives in `~/.local/share/utlangis/`: `signal.db3` (keys, sessions,
-messages; SQLite), `threads.json` (conversation list) and `attachments/`.
+messages; SQLite), `threads.json` (conversation list), `receipts.json`
+(delivery state of own messages), `calls.json` (call log) and
+`attachments/`.
 The app's AppArmor confinement keeps other apps out of it. Deleting the
 folder (or uninstalling) removes the account from this phone; the number then
 has to be registered again.
@@ -266,12 +319,24 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
   app is suspended; UT Langis reopens it when it comes back to the foreground
   and then receives everything that arrived meanwhile. Notifications in the
   background only work if suspension is turned off for UT Langis (e.g. with
-  UT Tweak Tool). Signal has no push service for Ubuntu Touch.
+  UT Tweak Tool). Signal has no push service for Ubuntu Touch. Calls only
+  ring while the app is open; during a call the screen is kept on so the
+  call does not break off.
+- **Calls and audio:** the call is routed by switching the port of
+  PulseAudio's default sink (Halium's droid sink: `output-earpiece` /
+  `output-speaker`); the previous port is restored afterwards, a headset is
+  left alone. The microphone is amplified by the microphone gain of the
+  settings during a call. The camera picture reaches WebRTC as grabs of the
+  viewfinder, as Ubuntu Touch's camera gives its pictures to the screen
+  only.
 - **Permissions** (`utlangis.apparmor`): `networking` for Signal's servers,
   `webview` for the captcha page, `content_exchange` to pick photos and
   contacts in other apps, `push-notification-client` for notifications,
   `audio` and `microphone` for voice messages (Ubuntu Touch asks once before
-  the microphone is used). There is deliberately no `contacts` group: a new
+  the microphone is used) and calls, `camera` for scanning the QR code of a
+  device to link (Signal Desktop) and for video calls, `video` for playing
+  received videos, `content_exchange_source` for handing received files to
+  other apps (open or save). There is deliberately no `contacts` group: a new
   chat's contact is picked in the Contacts app through the Content Hub, so
   the app only ever sees that one contact, and the OpenStore accepts the
   package without manual review.
@@ -280,6 +345,7 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
 
 ## License
 
-GPL-3.0, see `LICENSE`. The linked libraries presage and libsignal
-remain under their own license (AGPL-3.0), which also applies to builds
-that include them.
+GPL-3.0, see `LICENSE`. The linked libraries presage and libsignal, and
+RingRTC / WebRTC in the call library, remain under their own licenses
+(AGPL-3.0 for presage, libsignal and RingRTC; BSD for WebRTC); the AGPL-3.0
+also applies to builds that include them.

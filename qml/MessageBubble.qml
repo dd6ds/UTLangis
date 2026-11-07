@@ -1,21 +1,35 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import "linkify.js" as Linkify
 
 // One message: own messages on the right, others on the left with the
-// sender's name in groups. Images are shown inline, other attachments as
-// their file name; a reply shows the quoted message on top. Press and hold
-// offers to react, reply or delete; reactions show below the bubble. Uses the roles of
+// sender's name in groups. Images are shown inline, several of them as a
+// group (ImageGroup), other attachments as a player or their file name; a
+// reply shows the quoted message on top. Press and hold offers to react,
+// reply, edit or delete; reactions show below the bubble. Uses the roles of
 // MessageListModel.
 Item {
     id: bubble
     property var app
+
+    // The message as the actions dialog and the image and video viewers
+    // take it ({ts, outgoing, sender, text, senderName, myReaction}).
+    property var info: null
 
     // Press and hold on the bubble: reply or delete.
     signal actionsRequested()
 
     readonly property real maxBubbleWidth: width * 0.8
     readonly property color textColor: outgoing ? app.colorBubbleOwnText : app.colorText
+
+    function isImage(attachment) {
+        return attachment.type.indexOf("image/") === 0
+    }
+    readonly property var imagePaths:
+        attachments.filter(isImage).map(function (a) { return a.path })
+    readonly property var otherAttachments:
+        attachments.filter(function (a) { return !isImage(a) })
 
     // "👍 2  ❤️" for the reactions to this message ("" = none).
     readonly property string reactionSummary: {
@@ -70,7 +84,7 @@ Item {
         anchors.leftMargin: bubble.app.gu
         width: Math.min(bubble.maxBubbleWidth, content.implicitWidth + 2 * bubble.app.gu)
         height: content.implicitHeight + 1.4 * bubble.app.gu
-        radius: bubble.app.gu * 1.2
+        radius: bubble.app.gu * 2
         color: outgoing ? bubble.app.colorBubbleOwn : bubble.app.colorBubbleOther
 
         MouseArea {
@@ -103,25 +117,40 @@ Item {
                 textColor: bubble.textColor
             }
 
+            ImageGroup {
+                Layout.preferredWidth: implicitWidth
+                maxWidth: bubble.maxBubbleWidth - 2 * bubble.app.gu
+                visible: bubble.imagePaths.length > 0
+                app: bubble.app
+                paths: bubble.imagePaths
+                message: bubble.info
+                onPressAndHeld: bubble.actionsRequested()
+            }
+
             Repeater {
-                model: attachments
+                model: bubble.otherAttachments
                 delegate: AttachmentView {
                     Layout.maximumWidth: bubble.maxBubbleWidth - 2 * bubble.app.gu
                     app: bubble.app
                     path: modelData.path
                     contentType: modelData.type
                     textColor: bubble.textColor
+                    message: bubble.info
                     onPressAndHeld: bubble.actionsRequested()
                 }
             }
 
+            // Web addresses in the text are links that open in the browser.
             Label {
+                readonly property bool linked: Linkify.hasLink(model.text)
                 Layout.maximumWidth: bubble.maxBubbleWidth - 2 * bubble.app.gu
-                visible: text.length > 0
-                text: model.text
+                visible: model.text.length > 0
+                text: linked ? Linkify.toStyledText(model.text) : model.text
                 color: bubble.textColor
+                linkColor: outgoing ? bubble.textColor : bubble.app.colorAccent
                 wrapMode: Text.Wrap
-                textFormat: Text.PlainText
+                textFormat: linked ? Text.StyledText : Text.PlainText
+                onLinkActivated: Qt.openUrlExternally(link)
             }
 
             // Time, and for own messages the delivery state: ✓ sent,
@@ -130,6 +159,14 @@ Item {
                 Layout.alignment: Qt.AlignRight
                 spacing: bubble.app.gu * 0.5
 
+                Label {
+                    visible: edited
+                    text: qsTr("edited")
+                    color: bubble.textColor
+                    opacity: 0.7
+                    font.pixelSize: bubble.app.fontSecondary * 0.85
+                    font.italic: true
+                }
                 Label {
                     text: bubble.app.timeText(ts)
                     color: bubble.textColor

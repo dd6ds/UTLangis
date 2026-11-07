@@ -21,6 +21,7 @@ use tokio::task::{JoinHandle, LocalSet};
 use crate::commands::{self, Command};
 use crate::events::{EventSink, State};
 use crate::linking::{self, LinkResult};
+use crate::calls::Calls;
 use crate::receipts::Receipts;
 use crate::receiver;
 use crate::threads::ThreadIndex;
@@ -32,6 +33,8 @@ pub struct Shared {
     pub sink: EventSink,
     pub index: RefCell<ThreadIndex>,
     pub receipts: RefCell<Receipts>,
+    /// Ringing calls and the calls of the chats (calls.rs).
+    pub calls: RefCell<Calls>,
     /// Received messages per thread not yet seen by the user: (sender, sent
     /// timestamp), for read receipts once the chat is opened.
     pub unread: RefCell<HashMap<String, Vec<(ServiceId, u64)>>>,
@@ -117,6 +120,7 @@ impl Worker {
             sink,
             index: RefCell::new(ThreadIndex::load(data_dir)),
             receipts: RefCell::new(Receipts::load(data_dir)),
+            calls: RefCell::new(Calls::load(data_dir)),
             unread: RefCell::new(HashMap::new()),
             attachments_dir,
         });
