@@ -23,6 +23,8 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED IMPORTED_TARGET gstreamer-1.0)
 # PulseAudio: earpiece / loudspeaker during calls (src/callaudio.cpp).
 pkg_check_modules(PULSE REQUIRED IMPORTED_TARGET libpulse)
+# GSettings: the system message sound and silent mode (src/notifier.cpp).
+pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
 
 # ---------------------------------------------------------------------------
 # Rust backend (core/): built by cargo as a static library for the target the
@@ -160,7 +162,7 @@ target_include_directories(utlangis PRIVATE
 # The Rust static library needs pthread, dl and libm from the system, and
 # libstdc++ for the C++ parts of BoringSSL (already linked for Qt).
 target_link_libraries(utlangis
-    Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick Qt5::DBus Qt5::WebEngine PkgConfig::GSTREAMER PkgConfig::PULSE
+    Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick Qt5::DBus Qt5::WebEngine PkgConfig::GSTREAMER PkgConfig::PULSE PkgConfig::GIO
     ${RUST_CORE_LIB} pthread dl m)
 
 install(TARGETS utlangis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

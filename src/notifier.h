@@ -55,7 +55,8 @@ signals:
 private:
     static QString appId();
     static QVariantList findSounds();
-    void post(const QString &title, const QString &body, bool systemSound) const;
+    static QString systemSound();
+    void post(const QString &title, const QString &body) const;
     void playFile(const QString &path);
     void save() const;
 

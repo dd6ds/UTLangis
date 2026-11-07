@@ -1,5 +1,8 @@
 // Notification cards, sounds and muting, see notifier.h.
 
+// GIO before Qt: Qt's "signals" macro breaks the GIO headers.
+#include <gio/gio.h>
+
 #include "notifier.h"
 
 #include <QCoreApplication>
@@ -34,6 +37,10 @@ const char *const kSoundDirs[] = {
     "/usr/share/sounds/lomiri/notifications",
     "/usr/share/sounds/ubuntu/notifications",
 };
+
+// The message sound and silent mode chosen in the system settings.
+const char *const kSystemSoundSchema = "com.lomiri.touch.sound";
+const char *const kFallbackSound = "/usr/share/sounds/lomiri/notifications/Xylo.ogg";
 
 // The playbin is kept for a while after a sound so repeated messages do
 // not set up the audio output each time.
@@ -83,6 +90,28 @@ QVariantList Notifier::findSounds()
             break;
     }
     return sounds;
+}
+
+// The system message sound, or nothing in silent mode.
+QString Notifier::systemSound()
+{
+    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
+    GSettingsSchema *schema = source
+            ? g_settings_schema_source_lookup(source, kSystemSoundSchema, TRUE) : nullptr;
+    if (!schema)
+        return QString::fromLatin1(kFallbackSound);
+    g_settings_schema_unref(schema);
+    GSettings *settings = g_settings_new(kSystemSoundSchema);
+    QString path;
+    if (!g_settings_get_boolean(settings, "silent-mode")) {
+        gchar *file = g_settings_get_string(settings, "incoming-message-sound");
+        path = QString::fromUtf8(file);
+        g_free(file);
+        if (path.isEmpty() || !QFileInfo::exists(path))
+            path = QString::fromLatin1(kFallbackSound);
+    }
+    g_object_unref(settings);
+    return path;
 }
 
 void Notifier::save() const
@@ -158,12 +187,12 @@ void Notifier::notify(const QString &thread, const QString &title, const QString
     const QString summary = title.isEmpty()
             ? QCoreApplication::translate("Notifier", "New message") : title;
 
-    // A chosen sound file is played by the app itself: Postal only knows the
-    // system sound or files inside the app package.
-    const bool systemSound = m_sound == kDefaultSound;
-    if (!systemSound && !m_sound.isEmpty())
-        playFile(m_sound);
-    post(summary, body, systemSound);
+    // The app plays the sound itself: Lomiri plays no notification sound for
+    // the app in front, and the app only receives messages while in front.
+    const QString sound = m_sound == kDefaultSound ? systemSound() : m_sound;
+    if (!sound.isEmpty())
+        playFile(sound);
+    post(summary, body);
 }
 
 // Postal wants "<package>_<app>"; APP_ID also carries the version.
@@ -175,14 +204,14 @@ QString Notifier::appId()
     return parts.at(0) + QLatin1Char('_') + parts.at(1);
 }
 
-void Notifier::post(const QString &title, const QString &body, bool systemSound) const
+void Notifier::post(const QString &title, const QString &body) const
 {
     const QJsonObject card{{QStringLiteral("summary"), title},
                            {QStringLiteral("body"), body},
                            {QStringLiteral("popup"), true},
                            {QStringLiteral("persist"), true}};
     const QJsonObject notification{{QStringLiteral("card"), card},
-                                   {QStringLiteral("sound"), systemSound},
+                                   {QStringLiteral("sound"), false},
                                    {QStringLiteral("vibrate"), true}};
     const QJsonObject message{{QStringLiteral("notification"), notification}};
 

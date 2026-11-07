@@ -322,6 +322,10 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
   UT Tweak Tool). Signal has no push service for Ubuntu Touch. Calls only
   ring while the app is open; during a call the screen is kept on so the
   call does not break off.
+- **Notification sounds:** Lomiri plays no notification sound for the app in
+  front, so UT Langis plays the message sound itself: the phone's message
+  sound (`com.lomiri.touch.sound`, nothing in silent mode) or the one chosen
+  in the settings.
 - **Calls and audio:** the call is routed by switching the port of
   PulseAudio's default sink (Halium's droid sink: `output-earpiece` /
   `output-speaker`); the previous port is restored afterwards, a headset is
