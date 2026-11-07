@@ -328,8 +328,9 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
   in the settings.
 - **Calls and audio:** the call is routed by switching the port of
   PulseAudio's default sink (Halium's droid sink: `output-earpiece` /
-  `output-speaker`); the previous port is restored afterwards, a headset is
-  left alone. The microphone is amplified by the microphone gain of the
+  `output-speaker`); the previous port is restored afterwards, or at the
+  next start if the app was closed during the call; a headset is left
+  alone. The microphone is amplified by the microphone gain of the
   settings during a call. The camera picture reaches WebRTC as grabs of the
   viewfinder, as Ubuntu Touch's camera gives its pictures to the screen
   only.

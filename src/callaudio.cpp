@@ -20,6 +20,12 @@ const char *const kRingbackPipeline =
         "audiotestsrc wave=sine freq=425 volume=0.25 ! audioconvert ! pulsesink";
 const int kRingbackOnMs = 1000;
 const int kRingbackOffMs = 4000;
+// The route to restore while a call runs (sink, port, microphone volume),
+// kept in case the app does not end the call itself.
+const char *const kRestoreSinkKey = "callAudio/sink";
+const char *const kRestorePortKey = "callAudio/port";
+const char *const kRestoreSourceKey = "callAudio/source";
+const char *const kRestoreSourceVolumeKey = "callAudio/sourceVolume";
 // Shared with voice messages (src/voicenotes.cpp).
 const char *const kMicGainKey = "voice/micGainDb";
 const int kDefaultMicGainDb = 12;
@@ -287,6 +293,48 @@ void CallAudio::setSourceVolume(const QString &source, const pa_cvolume &volume)
             }, m_loop));
 }
 
+void CallAudio::rememberRoute()
+{
+    QSettings settings;
+    settings.setValue(QLatin1String(kRestoreSinkKey), m_routing ? m_sink : QString());
+    settings.setValue(QLatin1String(kRestorePortKey), m_routing ? m_previousPort : QString());
+    settings.setValue(QLatin1String(kRestoreSourceKey), m_source);
+    settings.setValue(QLatin1String(kRestoreSourceVolumeKey),
+                      m_previousSourceVolume.channels > 0
+                      ? static_cast<uint>(pa_cvolume_max(&m_previousSourceVolume)) : 0u);
+}
+
+void CallAudio::forgetRoute()
+{
+    QSettings settings;
+    settings.remove(QLatin1String(kRestoreSinkKey));
+    settings.remove(QLatin1String(kRestorePortKey));
+    settings.remove(QLatin1String(kRestoreSourceKey));
+    settings.remove(QLatin1String(kRestoreSourceVolumeKey));
+}
+
+void CallAudio::restoreAfterInterruptedCall()
+{
+    QSettings settings;
+    const QString sink = settings.value(QLatin1String(kRestoreSinkKey)).toString();
+    const QString port = settings.value(QLatin1String(kRestorePortKey)).toString();
+    const QString source = settings.value(QLatin1String(kRestoreSourceKey)).toString();
+    const uint volume = settings.value(QLatin1String(kRestoreSourceVolumeKey)).toUInt();
+    if ((sink.isEmpty() && source.isEmpty()) || !connectPulse())
+        return;
+    qDebug() << "CallAudio: restoring the audio route of an interrupted call";
+    pa_threaded_mainloop_lock(m_loop);
+    if (!sink.isEmpty() && !port.isEmpty())
+        setPort(sink, port);
+    pa_cvolume current;
+    if (!source.isEmpty() && volume > 0 && sourceVolume(source, &current)) {
+        pa_cvolume_set(&current, current.channels, static_cast<pa_volume_t>(volume));
+        setSourceVolume(source, current);
+    }
+    pa_threaded_mainloop_unlock(m_loop);
+    forgetRoute();
+}
+
 void CallAudio::beginCall(bool speaker)
 {
     if (!m_previousPort.isEmpty() || !connectPulse())
@@ -322,6 +370,7 @@ void CallAudio::beginCall(bool speaker)
         }
     }
     pa_threaded_mainloop_unlock(m_loop);
+    rememberRoute();
 }
 
 void CallAudio::setSpeaker(bool speaker)
@@ -345,5 +394,6 @@ void CallAudio::endCall()
     m_previousSourceVolume.channels = 0;
     pa_threaded_mainloop_unlock(m_loop);
     m_previousPort.clear();
+    forgetRoute();
     m_routing = false;
 }

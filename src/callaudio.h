@@ -42,6 +42,10 @@ public:
     void setSpeaker(bool speaker);
     // Back to the route from before the call.
     void endCall();
+    // Undoes the route of a call the app did not end itself (it was closed
+    // or crashed during the call), so other sounds are not stuck on the
+    // earpiece.
+    void restoreAfterInterruptedCall();
 
 private:
     bool connectPulse();
@@ -52,6 +56,8 @@ private:
     bool sourceVolume(const QString &source, pa_cvolume *volume);
     void setSourceVolume(const QString &source, const pa_cvolume &volume);
     void pollRinger();
+    void rememberRoute();
+    void forgetRoute();
 
     GstElement *m_ringer = nullptr;
     QTimer m_ringTicker;

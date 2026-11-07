@@ -27,6 +27,7 @@ CallEngine::CallEngine(SignalClient *client, QObject *parent)
                 onIncomingCall(callId, thread, title);
             });
     connect(client, &SignalClient::callEnded, this, &CallEngine::onRingingEnded);
+    m_audio.restoreAfterInterruptedCall();
     m_ticker.setInterval(1000);
     connect(&m_ticker, &QTimer::timeout, this, &CallEngine::tick);
 }
