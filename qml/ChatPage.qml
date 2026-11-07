@@ -344,6 +344,14 @@ Page {
                         Accessible.name: qsTr("Attach photo")
                         onClicked: importPicker.open()
                     }
+                    ToolButton {
+                        text: "📷"
+                        font.pixelSize: page.app.fontTitle
+                        enabled: page.editing === null
+                        Accessible.name: qsTr("Take photo")
+                        onClicked: page.app.stack.push(Qt.resolvedUrl("ChatCameraPage.qml"),
+                                                       { app: page.app })
+                    }
                 }
             }
 

@@ -81,7 +81,7 @@ ApplicationWindow {
         property string phone: "+49"
         // Whether the user was asked for a profile name after registering.
         property bool profileAsked: false
-        // Shutter click of the QR scanner's photos.
+        // Shutter click of the chat camera's and the QR scanner's photos.
         property bool shutterSound: true
     }
     property alias settings: settings

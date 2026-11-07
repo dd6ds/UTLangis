@@ -65,8 +65,7 @@ Page {
             Switch {
                 id: shutterSwitch
                 Layout.fillWidth: true
-                visible: !Signal.linked
-                text: qsTr("Camera sound when scanning QR codes")
+                text: qsTr("Camera sound (photos in the chat, QR codes)")
                 checked: page.app.settings.shutterSound
                 onToggled: page.app.settings.shutterSound = checked
                 contentItem: AppLabel {

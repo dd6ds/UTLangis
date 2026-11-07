@@ -40,12 +40,22 @@ ImageEditor::ImageEditor(const QString &workDir, QObject *parent)
     QDir().mkpath(m_workDir);
 }
 
-QString ImageEditor::save(const QImage &image)
+QString ImageEditor::newPath(const QString &prefix)
 {
-    const QString path = QStringLiteral("%1/edit-%2-%3.jpg")
-            .arg(m_workDir)
+    return QStringLiteral("%1/%2-%3-%4.jpg")
+            .arg(m_workDir, prefix)
             .arg(QDateTime::currentMSecsSinceEpoch())
             .arg(++m_counter);
+}
+
+QString ImageEditor::newPhotoPath()
+{
+    return newPath(QStringLiteral("photo"));
+}
+
+QString ImageEditor::save(const QImage &image)
+{
+    const QString path = newPath(QStringLiteral("edit"));
     if (!image.save(path, "JPEG", kJpegQuality)) {
         qWarning() << "ImageEditor: cannot write" << path;
         return QString();

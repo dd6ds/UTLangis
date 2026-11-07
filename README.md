@@ -40,6 +40,8 @@ Names and numbers in the screenshots are placeholders.
   opens them full screen, swipe left/right to go through them, pinch or
   double-tap to zoom; from there react to or reply to the message, save the
   image (⤓) or crop it (✂) to send the cut-out
+- Take a photo in the chat (📷), front or back camera, with or without the
+  shutter sound (settings), and crop it before sending
 - Crop and turn a photo before sending it (✂ above the input field)
 - Videos play in the app (tap the tile); other files open or save with
   another app (⤓)
@@ -338,8 +340,9 @@ python3 i18n/translate.py   # fills all languages; lists any text still missing
   `webview` for the captcha page, `content_exchange` to pick photos and
   contacts in other apps, `push-notification-client` for notifications,
   `audio` and `microphone` for voice messages (Ubuntu Touch asks once before
-  the microphone is used) and calls, `camera` for scanning the QR code of a
-  device to link (Signal Desktop) and for video calls, `video` for playing
+  the microphone is used) and calls, `camera` for photos in the chat, for
+  scanning the QR code of a device to link (Signal Desktop) and for video
+  calls, `video` for playing
   received videos, `content_exchange_source` for handing received files to
   other apps (open or save). There is deliberately no `contacts` group: a new
   chat's contact is picked in the Contacts app through the Content Hub, so

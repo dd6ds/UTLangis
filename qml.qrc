@@ -35,6 +35,7 @@
     <file>qml/VideoPlayerPage.qml</file>
     <file>qml/ExportPicker.qml</file>
     <file>qml/CropPage.qml</file>
+    <file>qml/ChatCameraPage.qml</file>
     <file>qml/ImportPicker.qml</file>
     <file>qml/SettingsPage.qml</file>
     <file>qml/LinkedDevicesPage.qml</file>

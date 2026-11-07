@@ -184,6 +184,45 @@
     </message>
 </context>
 <context>
+    <name>ChatCameraPage</name>
+    <message>
+        <location filename="../qml/ChatCameraPage.qml" line="+23" />
+        <location line="+20" />
+        <source>The photo could not be taken.</source>
+        <translation>No se pudo hacer la foto.</translation>
+    </message>
+    <message>
+        <location line="-19" />
+        <source>The camera is not available: %1</source>
+        <translation>La cámara no está disponible: %1</translation>
+    </message>
+    <message>
+        <location line="+50" />
+        <source>Back</source>
+        <translation>Atrás</translation>
+    </message>
+    <message>
+        <location line="+10" />
+        <source>Turn camera sound off</source>
+        <translation>Desactivar el sonido de la cámara</translation>
+    </message>
+    <message>
+        <location line="+1" />
+        <source>Turn camera sound on</source>
+        <translation>Activar el sonido de la cámara</translation>
+    </message>
+    <message>
+        <location line="+16" />
+        <source>Take photo</source>
+        <translation>Hacer una foto</translation>
+    </message>
+    <message>
+        <location line="+17" />
+        <source>Switch camera</source>
+        <translation>Cambiar de cámara</translation>
+    </message>
+</context>
+<context>
     <name>ChatPage</name>
     <message>
         <location filename="../qml/ChatPage.qml" line="+45" />
@@ -271,17 +310,22 @@
         <translation>Emoji</translation>
     </message>
     <message>
-        <location line="+37" />
+        <location line="+31" />
+        <source>Take photo</source>
+        <translation>Hacer una foto</translation>
+    </message>
+    <message>
+        <location line="+14" />
         <source>Record voice message</source>
         <translation>Grabar mensaje de voz</translation>
     </message>
     <message>
-        <location line="-22" />
+        <location line="-30" />
         <source>Message</source>
         <translation>Mensaje</translation>
     </message>
     <message>
-        <location line="+22" />
+        <location line="+30" />
         <source>Send</source>
         <translation>Enviar</translation>
     </message>
@@ -858,9 +902,9 @@
         <translation>Dispositivos vinculados (p. ej. Signal Desktop)</translation>
     </message>
     <message>
-        <location line="+9" />
-        <source>Camera sound when scanning QR codes</source>
-        <translation>Sonido de la cámara al escanear códigos QR</translation>
+        <location line="+8" />
+        <source>Camera sound (photos in the chat, QR codes)</source>
+        <translation>Sonido de la cámara (fotos en el chat, códigos QR)</translation>
     </message>
     <message>
         <location line="+14" />

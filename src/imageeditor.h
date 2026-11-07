@@ -6,7 +6,8 @@
 class QImage;
 
 // Turns and crops photos for the crop page (qml/CropPage.qml): received
-// images and photos about to be sent. Every step writes a new JPEG file into
+// images and photos about to be sent; also holds the photos taken with the
+// chat's camera. Every step writes a new JPEG file into
 // the work folder and returns its file:// URL; the original stays untouched.
 // The work folder is emptied at start, its files are only needed until sent.
 class ImageEditor : public QObject
@@ -21,9 +22,12 @@ public:
     // The part of the image given in fractions (0..1) of its width and height,
     // as shown upright (EXIF orientation applied), or "" on error.
     Q_INVOKABLE QString crop(const QString &url, qreal x, qreal y, qreal width, qreal height);
+    // Where the chat's camera stores a new photo (ChatCameraPage.qml).
+    Q_INVOKABLE QString newPhotoPath();
 
 private:
     QString save(const QImage &image);
+    QString newPath(const QString &prefix);
 
     QString m_workDir;
     int m_counter = 0;
