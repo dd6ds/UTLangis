@@ -1,7 +1,7 @@
 {
   "name": "utlangis",
   "title": "UT Langis",
-  "version": "0.3.4",
+  "version": "0.3.4a",
   "description": "Signal messenger for Ubuntu Touch, registered as the primary device of your number",
   "maintainer": "Dennis <dd6ds@eclipso.de>",
   "architecture": "$ENV{CLICK_ARCH}",

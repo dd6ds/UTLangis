@@ -124,7 +124,7 @@ anyone with your screen code and a USB cable has a shell on the phone.
 ### With adb
 
 ```bash
-CLICK=utlangis_0.3.4_arm64.click      # the file you downloaded or built
+CLICK=utlangis_0.3.4a_arm64.click      # the file you downloaded or built
 
 adb push "$CLICK" /home/phablet/
 adb shell gdbus call --system --dest com.lomiri.click \
