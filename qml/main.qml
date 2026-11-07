@@ -237,6 +237,11 @@ ApplicationWindow {
     // Registration errors are shown on the registration page itself.
     readonly property var pageErrorActions: ["register", "confirm"]
 
+    // The backend may report its state while this file is still being
+    // loaded (the camera's media service runs the event loop then), before
+    // the Connections below exist.
+    Component.onCompleted: showRoot()
+
     Connections {
         target: Signal
         onStateChanged: rootWindow.showRoot()
